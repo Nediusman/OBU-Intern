@@ -1,0 +1,418 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Oda Bultum University — Public Website Design System
+ * Brand: Forest Green primary, Gold accent, warm white surfaces
+ * Type: Libre Baskerville headings / IBM Plex Sans body
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  /* Surfaces */
+  --background: oklch(0.988 0.004 95);
+  --foreground: oklch(0.18 0.03 165);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.03 165);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.03 165);
+
+  /* OBU Forest Green primary */
+  --primary: oklch(0.36 0.1 155);
+  --primary-foreground: oklch(0.99 0.005 120);
+
+  /* Light green tint for secondary bg */
+  --secondary: oklch(0.96 0.012 148);
+  --secondary-foreground: oklch(0.25 0.07 155);
+
+  --muted: oklch(0.965 0.008 148);
+  --muted-foreground: oklch(0.5 0.025 155);
+
+  /* Gold accent */
+  --accent: oklch(0.72 0.13 82);
+  --accent-foreground: oklch(0.2 0.05 70);
+
+  /* Gold extras */
+  --gold: oklch(0.72 0.13 82);
+  --gold-soft: oklch(0.96 0.045 88);
+
+  --destructive: oklch(0.552 0.208 26);
+  --destructive-foreground: oklch(0.99 0.005 90);
+
+  --border: oklch(0.9 0.012 148);
+  --input: oklch(0.9 0.012 148);
+  --ring: oklch(0.46 0.1 155);
+
+  --font-heading: "Libre Baskerville", ui-serif, Georgia, serif;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+.dark {
+  --background: oklch(0.14 0.025 158);
+  --foreground: oklch(0.96 0.008 145);
+  --card: oklch(0.2 0.03 158);
+  --card-foreground: oklch(0.96 0.008 145);
+  --popover: oklch(0.2 0.03 158);
+  --popover-foreground: oklch(0.96 0.008 145);
+  --primary: oklch(0.58 0.12 154);
+  --primary-foreground: oklch(0.14 0.025 158);
+  --secondary: oklch(0.26 0.035 158);
+  --secondary-foreground: oklch(0.95 0.008 145);
+  --muted: oklch(0.26 0.035 158);
+  --muted-foreground: oklch(0.68 0.022 150);
+  --accent: oklch(0.78 0.12 84);
+  --accent-foreground: oklch(0.14 0.025 158);
+  --gold: oklch(0.78 0.12 84);
+  --gold-soft: oklch(0.3 0.05 82);
+  --destructive: oklch(0.62 0.19 26);
+  --destructive-foreground: oklch(0.98 0.005 90);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.58 0.1 154);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* OBU seal watermark — single centered */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url("/obu_transparen_logos.png");
+    background-repeat: no-repeat;
+    background-size: 600px 600px;
+    background-position: center center;
+    background-attachment: fixed;
+    opacity: 0.06;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    text-wrap: balance;
+    color: oklch(0.18 0.03 165);
+  }
+
+  h1 {
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    font-weight: 700;
+  }
+
+  h2 {
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+
+  h3 {
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+    font-weight: 600;
+  }
+
+  h4 {
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+
+  p {
+    line-height: 1.68;
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility prose-academic {
+  max-width: 68ch;
+  line-height: 1.75;
+  color: oklch(0.28 0.02 165);
+}
+
+@utility badge-academic {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@utility line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@utility line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ─── Admin Portal Design Tokens ─────────────────────────────────────────── */
+/* Scoped to .admin-portal wrapper so they don't affect the public site.      */
+
+@theme inline {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Libre Baskerville", ui-serif, Georgia, serif;
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-deep: var(--primary-deep);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-info: var(--info);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --shadow-card: 0 1px 2px oklch(0.25 0.03 155 / 0.05), 0 8px 24px -16px oklch(0.25 0.03 155 / 0.2);
+  --shadow-raised:
+    0 2px 4px oklch(0.25 0.03 155 / 0.06), 0 18px 40px -22px oklch(0.25 0.03 155 / 0.35);
+}
+
+:root {
+  /* Admin green palette */
+  --primary-soft: oklch(0.965 0.008 148);
+  --primary-deep: oklch(0.36 0.1 155);
+
+  /* Gold */
+  --gold: oklch(0.72 0.13 82);
+  --gold-soft: oklch(0.96 0.045 88);
+  --gold-foreground: oklch(0.2 0.05 70);
+
+  --info: oklch(0.55 0.09 232);
+
+  /* Charts */
+  --chart-1: oklch(0.42 0.09 154);
+  --chart-2: oklch(0.62 0.09 158);
+  --chart-3: oklch(0.745 0.126 82);
+  --chart-4: oklch(0.78 0.05 155);
+  --chart-5: oklch(0.55 0.06 232);
+
+  /* Sidebar — matched to light background */
+  --sidebar: oklch(0.988 0.004 95);
+  --sidebar-foreground: oklch(0.18 0.03 165);
+  --sidebar-primary: oklch(0.36 0.1 155);
+  --sidebar-primary-foreground: oklch(0.99 0.005 120);
+  --sidebar-accent: oklch(0.96 0.012 148);
+  --sidebar-accent-foreground: oklch(0.18 0.03 165);
+  --sidebar-border: oklch(0.9 0.012 148);
+  --sidebar-ring: oklch(0.36 0.1 155);
+}
+
+.dark {
+  --primary-soft: oklch(0.26 0.035 158);
+  --primary-deep: oklch(0.58 0.12 154);
+  --gold: oklch(0.78 0.12 84);
+  --gold-soft: oklch(0.3 0.05 82);
+  --gold-foreground: oklch(0.14 0.025 158);
+  --info: oklch(0.66 0.09 232);
+  --chart-1: oklch(0.42 0.09 154);
+  --chart-2: oklch(0.62 0.09 158);
+  --chart-3: oklch(0.78 0.12 84);
+  --chart-4: oklch(0.78 0.05 155);
+  --chart-5: oklch(0.66 0.09 232);
+  --sidebar: oklch(0.14 0.025 158);
+  --sidebar-foreground: oklch(0.96 0.008 145);
+  --sidebar-primary: oklch(0.58 0.12 154);
+  --sidebar-primary-foreground: oklch(0.14 0.025 158);
+  --sidebar-accent: oklch(0.26 0.035 158);
+  --sidebar-accent-foreground: oklch(0.96 0.008 145);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.58 0.1 154);
+}
+
+@utility surface-card {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+@utility text-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+@utility gold-rule {
+  background: linear-gradient(
+    90deg,
+    var(--color-gold) 0%,
+    color-mix(in oklab, var(--color-gold) 25%, transparent) 100%
+  );
+}
+
+/* ─── Custom UI/UX Redesign Utilities ───────────────────────────────────── */
+@theme inline {
+  --animate-fade-in-up: fade-in-up 0.6s ease-out forwards;
+  --animate-fade-in: fade-in 0.8s ease-out forwards;
+  --animate-slide-in-right: slide-in-right 0.6s ease-out forwards;
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+@utility glass-panel {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@utility glass-panel-dark {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@utility obu-gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, oklch(0.25 0.08 150) 100%);
+}
+
+@utility text-gradient-gold {
+  background: linear-gradient(90deg, var(--color-gold) 0%, #ffdf66 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── 3D Transform & Depth Utilities ───────────────────────────────────── */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.card-3d-interactive {
+  perspective: 1000px;
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.4s ease,
+    border-color 0.4s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-3d-interactive:hover {
+    transform: translateY(-6px) rotateX(1.5deg) rotateY(-1.5deg);
+    box-shadow:
+      0 20px 35px -10px rgba(24, 106, 66, 0.15),
+      0 10px 20px -5px rgba(0, 0, 0, 0.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-3d-interactive:hover {
+    transform: none;
+  }
+}

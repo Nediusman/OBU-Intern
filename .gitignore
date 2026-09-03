@@ -1,0 +1,62 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+build
+.output
+.vinxi
+.tanstack/**
+.nitro
+*.local
+
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local databases and cache
+*.db
+*.db-shm
+*.db-wal
+
+# Debugging, patches, and temporary test scripts
+scratch/
+scratch.*
+lint_output.txt
+*.patch
+test-output.html
+check_*.js
+test_*.js
+test_*.cjs
+test_*.ts
+test-*.ts
+test-*.js
+test-*.cjs
+verify_api.js
+create_admin.js
+schema_actual.txt
+supabase_openapi.json
+
