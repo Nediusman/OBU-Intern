@@ -1,8 +1,9 @@
 export type NavItem = {
+  id: string;
   label: string;
   to?: string;
   href?: string;
-  groups?: { heading?: string; items: { label: string; to?: string; href?: string }[] }[];
+  children?: NavItem[];
 };
 
 export interface NavigationDBItem {
@@ -13,6 +14,7 @@ export interface NavigationDBItem {
   url?: string | null;
   display_order?: number;
 }
+
 export interface NavigationNode extends NavigationDBItem {
   children: NavigationNode[];
 }
@@ -20,7 +22,7 @@ export interface NavigationNode extends NavigationDBItem {
 export const buildNavTree = (dbItems: NavigationDBItem[]): NavItem[] => {
   if (!dbItems || dbItems.length === 0) return [];
 
-  const itemMap = new Map();
+  const itemMap = new Map<string, NavigationNode>();
   dbItems.forEach((item) => {
     itemMap.set(item.id, { ...item, children: [] });
   });
@@ -41,14 +43,18 @@ export const buildNavTree = (dbItems: NavigationDBItem[]): NavItem[] => {
 
   const sortChildren = (nodes: NavigationNode[]) => {
     nodes.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-    nodes.forEach((node) => sortChildren(node.children));
+    nodes.forEach((node) => {
+      if (node.children && node.children.length > 0) {
+        sortChildren(node.children);
+      }
+    });
   };
   sortChildren(roots);
 
   return roots.map((root) => mapToNavItem(root));
 };
 
-const resolveLinkUrl = (
+export const resolveLinkUrl = (
   pageSlug?: string | null,
   customUrl?: string | null,
 ): string | undefined => {
@@ -57,67 +63,38 @@ const resolveLinkUrl = (
     return `/pages/${clean}`;
   }
   if (customUrl && customUrl.trim().length > 0) {
-    return customUrl.trim();
+    const trimmed = customUrl.trim();
+    if (
+      trimmed.startsWith("http://") ||
+      trimmed.startsWith("https://") ||
+      trimmed.startsWith("mailto:") ||
+      trimmed.startsWith("tel:")
+    ) {
+      return trimmed;
+    }
+    // Ensure internal path starts with '/'
+    return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
   }
   return undefined;
 };
 
-const mapToNavItem = (item: NavigationNode): NavItem => {
-  // If it's a page link, resolve to /pages/cleanSlug. Otherwise use url if present.
+export const mapToNavItem = (item: NavigationNode): NavItem => {
   const linkUrl = resolveLinkUrl(item.page_slug, item.url);
   const isExternal = Boolean(linkUrl && linkUrl.startsWith("http"));
 
   const navItem: NavItem = {
+    id: item.id,
     label: item.label,
+    ...(linkUrl
+      ? isExternal
+        ? { href: linkUrl }
+        : { to: linkUrl }
+      : {}),
+    children:
+      item.children && item.children.length > 0
+        ? item.children.map((child) => mapToNavItem(child))
+        : undefined,
   };
-
-  if (item.children && item.children.length > 0) {
-    const hasSubChildren = item.children.some(
-      (c: NavigationNode) => c.children && c.children.length > 0,
-    );
-
-    if (hasSubChildren) {
-      navItem.groups = item.children.map((child: NavigationNode) => {
-        const childLink = resolveLinkUrl(child.page_slug, child.url) || "/";
-        const isChildExternal = childLink.startsWith("http");
-
-        return {
-          heading: child.label,
-          items:
-            child.children && child.children.length > 0
-              ? child.children.map((sub: NavigationNode) => {
-                  const subLink = resolveLinkUrl(sub.page_slug, sub.url) || "/";
-                  return {
-                    label: sub.label,
-                    [subLink.startsWith("http") ? "href" : "to"]: subLink,
-                  };
-                })
-              : [{ label: child.label, [isChildExternal ? "href" : "to"]: childLink }],
-        };
-      });
-    } else {
-      navItem.groups = [
-        {
-          items: item.children.map((child: NavigationNode) => {
-            const childLink = resolveLinkUrl(child.page_slug, child.url) || "/";
-            return {
-              label: child.label,
-              [childLink.startsWith("http") ? "href" : "to"]: childLink,
-            };
-          }),
-        },
-      ];
-    }
-
-    if (linkUrl) {
-      if (isExternal) navItem.href = linkUrl;
-      else navItem.to = linkUrl;
-    }
-  } else {
-    const fallbackUrl = linkUrl || "/";
-    if (fallbackUrl.startsWith("http")) navItem.href = fallbackUrl;
-    else navItem.to = fallbackUrl;
-  }
 
   return navItem;
 };

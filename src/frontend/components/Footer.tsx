@@ -151,30 +151,28 @@ export function Footer({
                   {column.label}
                 </h4>
                 <ul className="space-y-2.5 text-sm">
-                  {column.groups &&
-                    column.groups[0]?.items.map(
-                      (l: { label: string; href?: string; to?: string }) => (
-                        <li key={l.label}>
-                          {"href" in l ? (
-                            <a
-                              href={l.href}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-white/75 transition-colors hover:text-[#ffcc00]"
-                            >
-                              {l.label}
-                            </a>
-                          ) : (
-                            <Link
-                              to={l.to}
-                              className="text-white/75 transition-colors hover:text-[#ffcc00]"
-                            >
-                              {l.label}
-                            </Link>
-                          )}
-                        </li>
-                      ),
-                    )}
+                  {column.children &&
+                    column.children.map((l) => (
+                      <li key={l.label}>
+                        {l.href ? (
+                          <a
+                            href={l.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-white/75 transition-colors hover:text-[#ffcc00]"
+                          >
+                            {l.label}
+                          </a>
+                        ) : (
+                          <Link
+                            to={l.to ?? "/"}
+                            className="text-white/75 transition-colors hover:text-[#ffcc00]"
+                          >
+                            {l.label}
+                          </Link>
+                        )}
+                      </li>
+                    ))}
                 </ul>
               </div>
             ))}
