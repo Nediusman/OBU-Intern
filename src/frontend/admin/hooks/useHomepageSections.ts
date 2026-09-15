@@ -7,6 +7,15 @@ type HomepageSectionRow = Database["public"]["Tables"]["homepage_sections"]["Row
 type HomepageSectionInsert = Database["public"]["Tables"]["homepage_sections"]["Insert"];
 type HomepageSectionUpdate = Database["public"]["Tables"]["homepage_sections"]["Update"];
 
+export type HomepageSectionWithMedia = Omit<HomepageSectionRow, "image_id"> & {
+  image_id?: string | null;
+  media?: {
+    id: string;
+    file_url: string;
+    original_name?: string | null;
+  } | null;
+};
+
 export function useHomepageSections(sectionType?: string) {
   const queryClient = useQueryClient();
 
@@ -15,7 +24,7 @@ export function useHomepageSections(sectionType?: string) {
     queryFn: async () => {
       let query = supabase
         .from("homepage_sections")
-        .select("*")
+        .select("*, media:image_id(id, file_url, original_name)")
         .order("display_order", { ascending: true });
       if (sectionType) {
         query = query.eq("section_type", sectionType);
@@ -25,7 +34,7 @@ export function useHomepageSections(sectionType?: string) {
         toast.error("Failed to load homepage sections");
         throw error;
       }
-      return data;
+      return data as unknown as HomepageSectionWithMedia[];
     },
   });
 

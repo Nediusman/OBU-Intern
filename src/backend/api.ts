@@ -330,9 +330,13 @@ export const getActivePrograms = createServerFn({ method: "GET" }).handler(async
   await initDb();
   const db = getDb();
   const res = await db.query(
-    `SELECT p.id, p.name, p.degree, p.duration, p.status, p.description, m.file_url as main_image_url
+    `SELECT p.id, p.name, p.slug, p.academic_unit_id, p.degree, p.duration, p.status, p.description,
+            m.file_url as main_image_url,
+            u.name as department_name,
+            u.slug as department_slug
        FROM programs p
        LEFT JOIN media m ON p.main_image_id = m.id
+       LEFT JOIN academic_units u ON p.academic_unit_id = u.id
        WHERE p.status = 'active'
        ORDER BY p.degree, p.name`,
   );
@@ -675,11 +679,15 @@ export type EventItem = {
 export type ProgramItem = {
   id: string;
   name: string;
+  slug: string;
+  academic_unit_id?: string | null;
   degree: string;
   department?: string;
-  duration: string;
+  department_name?: string | null;
+  department_slug?: string | null;
+  duration?: string | null;
   status: string;
-  description: string;
+  description?: string | null;
   main_image_url?: string | null;
 };
 export type LeaderItem = {

@@ -35,23 +35,15 @@ const president1Img = "https://obu.edu.et/wp-content/uploads/2026/01/President.j
 
 const heroSlides = [
   {
-    src: "https://z-p3-scontent.fadd2-1.fna.fbcdn.net/v/t39.99422-6/750229681_1549692956664278_3814203319237201195_n.png?stp=c16.0.1248.1248a_dst-jpg_tt6&cstp=mx1248x1248&ctp=s552x414&_nc_cat=109&ccb=1-7&_nc_sid=50ad20&_nc_eui2=AeFFmI-LKjZThPsayeL5If_yx-kVYEcV1XPH6RVgRxXVcxAqhKpkCR8ulpZa_XvU7N9cYhpgM2XadrTc2UDESWzJ&_nc_ohc=P2sIG8AgrVUQ7kNvwERuwTF&_nc_oc=AdqXWLu7_lF8P1TMnYdMDw2gYldUNRMNpdD29r5Sljy1G__sovZ6YXfdjc6jUH48zQ4&_nc_zt=14&_nc_ht=z-p3-scontent.fadd2-1.fna&_nc_gid=0egbxcV1I0sZRe4a0fLHmQ&_nc_ss=7b2a8&oh=00_AQLpuuXP5QDH5qjNNPtkzwB0h2IP0AiMh8eUS2xLR9feKA&oe=6A9B9635",
-    alt: "Oda Bultum University — Academic Excellence",
-  },
-  {
-    src: "https://z-p3-scontent.fadd2-1.fna.fbcdn.net/v/t39.99422-6/730905546_1339509234180920_1875935067468081847_n.png?stp=c342.0.1365.1365a_dst-jpg_tt6&cstp=mx1365x1365&ctp=s552x414&_nc_cat=107&ccb=1-7&_nc_sid=714c7a&_nc_eui2=AeF2haa0ysAQA2BVkPP4Ebb4dDn5q6xYA-N0OfmrrFgD4zKgrPiT8ZRWiyUL6Q5v7jwxWQvl2gq1u1YMMsOfU6eK&_nc_ohc=Qrll2ZxBtOUQ7kNvwF21YzN&_nc_oc=AdpWESdO5c-3tHl-6RL5bkILVHF3lZBhtW3Y_FE1_kzIewKpv2MwAWJR6OVoVYWv4GQ&_nc_zt=14&_nc_ht=z-p3-scontent.fadd2-1.fna&_nc_gid=TCLaThVH09rIwRBkj5-QsA&_nc_ss=7b2a8&oh=00_AQLJvUYOqUR0uR-2uQjxjIpmEIQlzLuvwKlIwKGG2jnlDw&oe=6A9B913A",
-    alt: "Oda Bultum University — Research & Community Impact",
-  },
-  {
-    src: "https://z-p3-scontent.fadd2-1.fna.fbcdn.net/v/t39.30808-6/509428185_1247579247382818_3911525484726819377_n.jpg?stp=c166.0.823.823a_dst-jpg_tt6&cstp=mx823x823&ctp=s552x414&_nc_cat=104&ccb=1-7&_nc_sid=714c7a&_nc_eui2=AeENgXNnz8m4xDED9y9zKlp0ND91hL8EMAY0P3WEvwQwBqNYlw9pqRg854-zJKG2HCWWiWzeTrU7DC2UzWx1I7gK&_nc_ohc=RalYzlhcCW0Q7kNvwF1chJ4&_nc_oc=AdpAK19M1OECp_-oozLOuDxTUnIn04CrZsqZDVIshCqSnXH63zRJC51uSfaMi2UTMx8&_nc_zt=23&_nc_ht=z-p3-scontent.fadd2-1.fna&_nc_gid=gA_kz69dwFu-oOj-m-utTQ&_nc_ss=7b2a8&oh=00_AQI1XlN4a8NlCCdLycMEuhAyqoowLUVKlS0MPQeZy5VglA&oe=6A9BADDC",
+    src: "/campuse_life_of_students.jpeg",
     alt: "Oda Bultum University — Campus Life & Student Success",
   },
   {
-    src: "https://z-p3-scontent.fadd1-1.fna.fbcdn.net/v/t39.99422-6/720603215_2455375454964000_4816870884213677354_n.png?stp=c214.0.853.853a_dst-jpg_tt6&cstp=mx853x853&ctp=s552x414&_nc_cat=102&ccb=1-7&_nc_sid=714c7a&_nc_eui2=AeEtehJ_ZTDTc_rJG3i0MoCP3DuhRoiRHDncO6FGiJEcOXtZwih27SgNvDvTaNb7FsHizLc2Q9wpD8wmpuk-Rp9v&_nc_ohc=y6bCIo8hdrEQ7kNvwHpYe_s&_nc_oc=Adrd1SHEb4RkMBMM3Xu-acmLOwW7ltGd99ojOexhJTPbokeUPboA8pITbvB-xxjiIzc&_nc_zt=14&_nc_ht=z-p3-scontent.fadd1-1.fna&_nc_gid=7WY9XDXpEgGpfTv1y5AB_Q&_nc_ss=7b2a8&oh=00_AQJ7sZr2yaVfEsnhiHBgQlvmjsqmlOm4zWQuRY37f_UnXw&oe=6A9B98E6",
+    src: "/gradution_ceremony.jpg",
     alt: "Oda Bultum University — Commencement Ceremony",
   },
   {
-    src: "https://z-p3-scontent.fadd2-1.fna.fbcdn.net/v/t39.99422-6/756345118_889425130905755_5061757023587169666_n.png?stp=c316.0.649.649a_dst-jpg_tt6&cstp=mx649x649&ctp=s552x414&_nc_cat=104&ccb=1-7&_nc_sid=714c7a&_nc_eui2=AeHi7ZQptK2Kk1-jufQVY_aQ4YhUbC755r7hiFRsLvnmvqYHQ7DO5owkV0kPwmxjHj-j_me0MqBTr4MXjGg6mwgG&_nc_ohc=elK2c44vQHoQ7kNvwEuaHLU&_nc_oc=AdpWESdO5c-3tHl-6RL5bkILVHF3lZBhtW3Y_FE1_kzIewKpv2MwAWJR6OVoVYWv4GQ&_nc_zt=14&_nc_ht=z-p3-scontent.fadd2-1.fna&_nc_gid=eUcpph8PduCL4IaJF1bApA&_nc_ss=7b2a8&oh=00_AQLbq7P0fiogAayO84LMI0qnqGdrrBq5xa3goasTaCQ-Yw&oe=6A9B8422",
+    src: "/campuse_building.jpg",
     alt: "Oda Bultum University — Faculty & Leadership",
   },
 ];
@@ -156,7 +148,7 @@ function Hero() {
   const slides =
     dynamicSlides.length > 0
       ? dynamicSlides.map((slide: { image?: string; title?: string; [key: string]: unknown }) => ({
-          src: slide.image || "https://obu.edu.et/wp-content/uploads/2026/01/20.jpeg",
+          src: slide.image || "/campus-hero.jpg",
           alt: slide.title || "Hero slide",
           objectPosition:
             typeof slide.title === "string" &&

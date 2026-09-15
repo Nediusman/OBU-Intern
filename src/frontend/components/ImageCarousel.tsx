@@ -108,6 +108,11 @@ export function ImageCarousel({
                   src={slide.src}
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover blur-xl opacity-30"
+                  onError={(e) => {
+                    if (!e.currentTarget.src.endsWith("/campus-hero.jpg")) {
+                      e.currentTarget.src = "/campus-hero.jpg";
+                    }
+                  }}
                 />
               )}
               <img
@@ -116,6 +121,11 @@ export function ImageCarousel({
                 className={`relative h-full w-full ${
                   objectFit === "contain" ? "object-contain" : "object-cover"
                 } ${slide.objectPosition || objectPosition || "object-[center_20%]"}`}
+                onError={(e) => {
+                  if (!e.currentTarget.src.endsWith("/campus-hero.jpg")) {
+                    e.currentTarget.src = "/campus-hero.jpg";
+                  }
+                }}
               />
               {showOverlay && (
                 <div

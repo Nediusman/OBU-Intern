@@ -48,6 +48,7 @@ import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as AcademicsDepartmentsIndexRouteImport } from './routes/academics.departments.index'
 import { Route as AcademicsDepartmentsSlugRouteImport } from './routes/academics.departments.$slug'
+import { Route as AcademicsProgramsIndexRouteImport } from './routes/academics.programs.index'
 import { Route as AcademicsProgramsSlugRouteImport } from './routes/academics.programs.$slug'
 import { Route as AdminAcademicsDepartmentsRouteImport } from './routes/admin.academics.departments'
 import { Route as AdminAcademicsFacultiesRouteImport } from './routes/admin.academics.faculties'
@@ -281,6 +282,11 @@ const AcademicsDepartmentsSlugRoute =
     path: '/academics/departments/$slug',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AcademicsProgramsIndexRoute = AcademicsProgramsIndexRouteImport.update({
+  id: '/academics/programs/',
+  path: '/academics/programs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AcademicsProgramsSlugRoute = AcademicsProgramsSlugRouteImport.update({
   id: '/academics/programs/$slug',
   path: '/academics/programs/$slug',
@@ -534,6 +540,7 @@ export interface FileRoutesByFullPath {
   '/research/facilities/$slug': typeof ResearchFacilitiesSlugRoute
   '/research/projects/$slug': typeof ResearchProjectsSlugRoute
   '/academics/departments/': typeof AcademicsDepartmentsIndexRoute
+  '/academics/programs/': typeof AcademicsProgramsIndexRoute
   '/admin/admissions/': typeof AdminAdmissionsIndexRoute
   '/research/community-engagement/': typeof ResearchCommunityEngagementIndexRoute
   '/research/facilities/': typeof ResearchFacilitiesIndexRoute
@@ -609,6 +616,7 @@ export interface FileRoutesByTo {
   '/research/facilities/$slug': typeof ResearchFacilitiesSlugRoute
   '/research/projects/$slug': typeof ResearchProjectsSlugRoute
   '/academics/departments': typeof AcademicsDepartmentsIndexRoute
+  '/academics/programs': typeof AcademicsProgramsIndexRoute
   '/admin/admissions': typeof AdminAdmissionsIndexRoute
   '/research/community-engagement': typeof ResearchCommunityEngagementIndexRoute
   '/research/facilities': typeof ResearchFacilitiesIndexRoute
@@ -686,6 +694,7 @@ export interface FileRoutesById {
   '/research/facilities/$slug': typeof ResearchFacilitiesSlugRoute
   '/research/projects/$slug': typeof ResearchProjectsSlugRoute
   '/academics/departments/': typeof AcademicsDepartmentsIndexRoute
+  '/academics/programs/': typeof AcademicsProgramsIndexRoute
   '/admin/admissions/': typeof AdminAdmissionsIndexRoute
   '/research/community-engagement/': typeof ResearchCommunityEngagementIndexRoute
   '/research/facilities/': typeof ResearchFacilitiesIndexRoute
@@ -764,6 +773,7 @@ export interface FileRouteTypes {
     | '/research/facilities/$slug'
     | '/research/projects/$slug'
     | '/academics/departments/'
+    | '/academics/programs/'
     | '/admin/admissions/'
     | '/research/community-engagement/'
     | '/research/facilities/'
@@ -839,6 +849,7 @@ export interface FileRouteTypes {
     | '/research/facilities/$slug'
     | '/research/projects/$slug'
     | '/academics/departments'
+    | '/academics/programs'
     | '/admin/admissions'
     | '/research/community-engagement'
     | '/research/facilities'
@@ -915,6 +926,7 @@ export interface FileRouteTypes {
     | '/research/facilities/$slug'
     | '/research/projects/$slug'
     | '/academics/departments/'
+    | '/academics/programs/'
     | '/admin/admissions/'
     | '/research/community-engagement/'
     | '/research/facilities/'
@@ -957,6 +969,7 @@ export interface RootRouteChildren {
   ResearchFacilitiesSlugRoute: typeof ResearchFacilitiesSlugRoute
   ResearchProjectsSlugRoute: typeof ResearchProjectsSlugRoute
   AcademicsDepartmentsIndexRoute: typeof AcademicsDepartmentsIndexRoute
+  AcademicsProgramsIndexRoute: typeof AcademicsProgramsIndexRoute
   ResearchCommunityEngagementIndexRoute: typeof ResearchCommunityEngagementIndexRoute
   ResearchFacilitiesIndexRoute: typeof ResearchFacilitiesIndexRoute
   ResearchProjectsIndexRoute: typeof ResearchProjectsIndexRoute
@@ -1235,6 +1248,13 @@ declare module '@tanstack/react-router' {
       path: '/academics/departments/$slug'
       fullPath: '/academics/departments/$slug'
       preLoaderRoute: typeof AcademicsDepartmentsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academics/programs/': {
+      id: '/academics/programs/'
+      path: '/academics/programs'
+      fullPath: '/academics/programs/'
+      preLoaderRoute: typeof AcademicsProgramsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/academics/programs/$slug': {
@@ -1611,6 +1631,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResearchFacilitiesSlugRoute: ResearchFacilitiesSlugRoute,
   ResearchProjectsSlugRoute: ResearchProjectsSlugRoute,
   AcademicsDepartmentsIndexRoute: AcademicsDepartmentsIndexRoute,
+  AcademicsProgramsIndexRoute: AcademicsProgramsIndexRoute,
   ResearchCommunityEngagementIndexRoute: ResearchCommunityEngagementIndexRoute,
   ResearchFacilitiesIndexRoute: ResearchFacilitiesIndexRoute,
   ResearchProjectsIndexRoute: ResearchProjectsIndexRoute,

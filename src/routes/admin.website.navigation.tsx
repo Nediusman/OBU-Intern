@@ -4,9 +4,19 @@ import { Plus, Trash2, Edit, ChevronDown, ChevronRight, X, Save, AlignLeft } fro
 import { useState } from "react";
 import { useNavigation } from "@/frontend/admin/hooks/useNavigation";
 import { usePages } from "@/frontend/admin/hooks/usePages";
+import { useAcademicUnits } from "@/frontend/admin/hooks/useAcademicUnits";
+import { usePrograms } from "@/frontend/admin/hooks/usePrograms";
 import type { Database } from "@/frontend/lib/database.types";
 import { toast } from "sonner";
 import { AdminBadge } from "@/frontend/admin/components/AdminBadge";
+
+type DestinationType =
+  | "none"
+  | "page"
+  | "college"
+  | "department"
+  | "program"
+  | "custom";
 
 interface NavigationNode {
   id: string;
@@ -27,6 +37,62 @@ interface NavigationNode {
 
 type NavigationItemRow = Database["public"]["Tables"]["navigation_items"]["Row"];
 type NavigationItemInsert = Database["public"]["Tables"]["navigation_items"]["Insert"];
+type NavigationItemUpdate = Database["public"]["Tables"]["navigation_items"]["Update"];
+
+type NavigationFormState = {
+  id?: string;
+  menu?: string;
+  label?: string;
+  url?: string | null;
+  page_id?: string | null;
+  parent_id?: string | null;
+  display_order?: number;
+  status?: string;
+  open_new_tab?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+function inferDestinationType(
+  item: NavigationFormState,
+): { type: DestinationType; slug: string } {
+  if (item.page_id) {
+    return { type: "page", slug: "" };
+  }
+
+  const url = item.url?.trim();
+  if (!url || url === "#") {
+    return { type: "none", slug: "" };
+  }
+
+  if (url.startsWith("/academics/departments/")) {
+    const slug = url.slice("/academics/departments/".length);
+    if (slug) {
+      return { type: "department", slug };
+    }
+  }
+
+  if (url.startsWith("/academics/programs/")) {
+    const slug = url.slice("/academics/programs/".length);
+    if (slug) {
+      return { type: "program", slug };
+    }
+  }
+
+  if (
+    url.startsWith("/academics/") &&
+    url !== "/academics" &&
+    !url.startsWith("/academics/departments") &&
+    !url.startsWith("/academics/programs")
+  ) {
+    const slug = url.slice("/academics/".length);
+    if (slug) {
+      return { type: "college", slug };
+    }
+  }
+
+  return { type: "custom", slug: "" };
+}
 
 export const Route = createFileRoute("/admin/website/navigation")({
   component: NavigationManagement,
@@ -121,21 +187,87 @@ function NavItem({
 
 function NavigationManagement() {
   const [view, setView] = useState<"list" | "editor">("list");
-  const [editingItem, setEditingItem] = useState<Partial<NavigationItemRow>>({});
+  const [editingItem, setEditingItem] = useState<NavigationFormState>({});
+  const [destinationType, setDestinationType] = useState<DestinationType>("none");
+  const [selectedAcademicSlug, setSelectedAcademicSlug] = useState<string>("");
 
   const { query, createMutation, updateMutation, deleteMutation } = useNavigation("main");
   const { query: pagesQuery } = usePages();
+  const { query: collegesQuery } = useAcademicUnits(["college", "institute", "school"]);
+  const { query: departmentsQuery } = useAcademicUnits("department");
+  const { query: programsQuery } = usePrograms();
+
+  const activeColleges = (collegesQuery.data || []).filter(
+    (u) => u.status === "active" && u.slug && u.slug.trim().length > 0,
+  );
+  const activeDepartments = (departmentsQuery.data || []).filter(
+    (d) => d.status === "active" && d.slug && d.slug.trim().length > 0,
+  );
+  const activePrograms = (programsQuery.data || []).filter(
+    (p) => p.status === "active" && p.slug && p.slug.trim().length > 0,
+  );
 
   const handleEdit = (item: NavigationNode) => {
     // Omitting children property since it's not part of the DB schema
     const { children, pages, page_slug, ...dbFields } = item;
-    setEditingItem(dbFields as Partial<NavigationItemRow>);
+    const formFields: NavigationFormState = {
+      ...dbFields,
+      url: dbFields.url ?? null,
+      page_id: dbFields.page_id ?? null,
+      parent_id: dbFields.parent_id ?? null,
+    };
+    setEditingItem(formFields);
+
+    const inferred = inferDestinationType(formFields);
+    setDestinationType(inferred.type);
+    setSelectedAcademicSlug(inferred.slug);
+
     setView("editor");
   };
 
   const handleCreate = (parentId?: string) => {
-    setEditingItem({ parent_id: parentId, display_order: 0, status: "active" });
+    setEditingItem({
+      parent_id: parentId ?? null,
+      display_order: 0,
+      status: "active",
+      menu: "main",
+      url: null,
+      page_id: null,
+    });
+    setDestinationType("none");
+    setSelectedAcademicSlug("");
     setView("editor");
+  };
+
+  const handleDestinationTypeChange = (newType: DestinationType) => {
+    setDestinationType(newType);
+    setSelectedAcademicSlug("");
+
+    if (newType === "none") {
+      setEditingItem((prev) => ({
+        ...prev,
+        url: null,
+        page_id: null,
+      }));
+    } else if (newType === "page") {
+      setEditingItem((prev) => ({
+        ...prev,
+        url: null,
+        page_id: prev.page_id || null,
+      }));
+    } else if (newType === "college" || newType === "department" || newType === "program") {
+      setEditingItem((prev) => ({
+        ...prev,
+        url: null,
+        page_id: null,
+      }));
+    } else if (newType === "custom") {
+      setEditingItem((prev) => ({
+        ...prev,
+        url: prev.url || "",
+        page_id: null,
+      }));
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -145,24 +277,68 @@ function NavigationManagement() {
   };
 
   const handleSave = () => {
-    if (!editingItem.label) {
+    if (!editingItem.label || !editingItem.label.trim()) {
       toast.error("Label is required");
       return;
     }
 
+    let finalUrl: string | null = null;
+    let finalPageId: string | null = null;
+
+    if (destinationType === "none") {
+      finalUrl = null;
+      finalPageId = null;
+    } else if (destinationType === "page") {
+      finalUrl = null;
+      finalPageId = editingItem.page_id || null;
+      if (!finalPageId) {
+        toast.error("Please select a CMS page");
+        return;
+      }
+    } else if (destinationType === "college") {
+      finalPageId = null;
+      finalUrl = editingItem.url || null;
+      if (!finalUrl) {
+        toast.error("Please select a College / Faculty / Institute");
+        return;
+      }
+    } else if (destinationType === "department") {
+      finalPageId = null;
+      finalUrl = editingItem.url || null;
+      if (!finalUrl) {
+        toast.error("Please select a Department");
+        return;
+      }
+    } else if (destinationType === "program") {
+      finalPageId = null;
+      finalUrl = editingItem.url || null;
+      if (!finalUrl) {
+        toast.error("Please select a Program");
+        return;
+      }
+    } else if (destinationType === "custom") {
+      finalPageId = null;
+      finalUrl = editingItem.url?.trim() || null;
+      if (!finalUrl) {
+        toast.error("Please enter a custom or external URL");
+        return;
+      }
+    }
+
     const payload: NavigationItemInsert = {
       menu: editingItem.menu || "main",
-      label: editingItem.label,
-      url: editingItem.url,
-      page_id: editingItem.page_id || undefined,
-      parent_id: editingItem.parent_id || undefined,
+      label: editingItem.label.trim(),
+      url: (finalUrl ?? null) as unknown as string,
+      page_id: (finalPageId ?? null) as unknown as string,
+      parent_id: (editingItem.parent_id || null) as unknown as string,
       display_order: editingItem.display_order || 0,
       status: editingItem.status || "active",
+      ...(editingItem.open_new_tab !== undefined ? { open_new_tab: editingItem.open_new_tab } : {}),
     };
 
     if (editingItem.id) {
       updateMutation.mutate(
-        { id: editingItem.id, updates: payload },
+        { id: editingItem.id, updates: payload as NavigationItemUpdate },
         { onSuccess: () => setView("list") },
       );
     } else {
@@ -253,36 +429,266 @@ function NavigationManagement() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Link to Page</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Destination Type *
+              </label>
               <select
-                value={editingItem.page_id || ""}
-                onChange={(e) => {
-                  setEditingItem({ ...editingItem, page_id: e.target.value, url: "" });
-                }}
+                value={destinationType}
+                onChange={(e) => handleDestinationTypeChange(e.target.value as DestinationType)}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#186a42] focus:ring-1 focus:ring-[#186a42]"
               >
-                <option value="">-- Custom URL Instead --</option>
-                {pagesQuery.data?.map((page: { id: string; title: string; slug: string }) => (
-                  <option key={page.id} value={page.id}>
-                    {page.title} ({page.slug})
-                  </option>
-                ))}
+                <option value="none">None / Dropdown Container</option>
+                <option value="page">CMS Page</option>
+                <option value="college">College / Faculty / Institute</option>
+                <option value="department">Department</option>
+                <option value="program">Program</option>
+                <option value="custom">Custom / External URL</option>
               </select>
-              <p className="mt-1 text-xs text-gray-500">Select an existing CMS page to link to.</p>
+              <p className="mt-1 text-xs text-gray-500">
+                Choose how this navigation item directs visitors when clicked.
+              </p>
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Custom URL</label>
-              <input
-                type="text"
-                value={editingItem.url || ""}
-                disabled={!!editingItem.page_id}
-                onChange={(e) => setEditingItem({ ...editingItem, url: e.target.value })}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#186a42] focus:ring-1 focus:ring-[#186a42] disabled:bg-gray-100 disabled:text-gray-400"
-                placeholder="e.g. https://example.com or /custom-path"
-              />
-              <p className="mt-1 text-xs text-gray-500">Only used if no Page is selected above.</p>
-            </div>
+            {destinationType === "none" && (
+              <div className="sm:col-span-2 rounded-md bg-emerald-50/70 border border-emerald-200 p-3.5 text-sm text-[#0c3822]">
+                <p className="font-semibold text-xs uppercase tracking-wider text-[#186a42]">
+                  Dropdown Container
+                </p>
+                <p className="mt-1 text-xs text-gray-600">
+                  This item functions purely as a parent container with no direct link. Clicking it on the website toggles its child menu items.
+                </p>
+              </div>
+            )}
+
+            {destinationType === "page" && (
+              <div className="sm:col-span-2 space-y-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  CMS Page *
+                </label>
+                <select
+                  value={editingItem.page_id || ""}
+                  onChange={(e) => {
+                    const pageId = e.target.value;
+                    const page = (pagesQuery.data || []).find((p: { id: string }) => p.id === pageId);
+                    setEditingItem((prev) => ({
+                      ...prev,
+                      page_id: pageId ? pageId : null,
+                      url: null,
+                      label: prev.label ? prev.label : (page?.title ?? ""),
+                    }));
+                  }}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#186a42] focus:ring-1 focus:ring-[#186a42]"
+                >
+                  <option value="">-- Select a CMS Page --</option>
+                  {pagesQuery.data?.map((page: { id: string; title: string; slug: string }) => (
+                    <option key={page.id} value={page.id}>
+                      {page.title} ({page.slug})
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-gray-500">
+                  Select an existing CMS page to link to.
+                </p>
+              </div>
+            )}
+
+            {destinationType === "college" && (
+              <div className="sm:col-span-2 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Academic Destination *
+                  </label>
+                  <select
+                    value={selectedAcademicSlug}
+                    onChange={(e) => {
+                      const slug = e.target.value;
+                      setSelectedAcademicSlug(slug);
+                      const unit = activeColleges.find((u) => u.slug === slug);
+                      const generatedUrl = slug ? `/academics/${slug}` : null;
+                      setEditingItem((prev) => ({
+                        ...prev,
+                        url: generatedUrl,
+                        page_id: null,
+                        label: prev.label ? prev.label : (unit?.name ?? ""),
+                      }));
+                    }}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#186a42] focus:ring-1 focus:ring-[#186a42]"
+                  >
+                    <option value="">-- Select College / Faculty / Institute --</option>
+                    {selectedAcademicSlug &&
+                      !activeColleges.some((u) => u.slug === selectedAcademicSlug) && (
+                        <option value={selectedAcademicSlug}>
+                          {selectedAcademicSlug} (Current)
+                        </option>
+                      )}
+                    {activeColleges.map((unit) => (
+                      <option key={unit.id} value={unit.slug}>
+                        {unit.name} ({unit.unit_type.charAt(0).toUpperCase() + unit.unit_type.slice(1)})
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Select an active College, Faculty, Institute, or School.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Generated URL
+                  </label>
+                  <input
+                    type="text"
+                    value={editingItem.url || ""}
+                    readOnly
+                    className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-600 font-mono text-sm outline-none cursor-not-allowed"
+                    placeholder="/academics/[college-slug]"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Read-only canonical URL automatically generated from the selected unit slug.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {destinationType === "department" && (
+              <div className="sm:col-span-2 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Academic Destination *
+                  </label>
+                  <select
+                    value={selectedAcademicSlug}
+                    onChange={(e) => {
+                      const slug = e.target.value;
+                      setSelectedAcademicSlug(slug);
+                      const dept = activeDepartments.find((d) => d.slug === slug);
+                      const generatedUrl = slug ? `/academics/departments/${slug}` : null;
+                      setEditingItem((prev) => ({
+                        ...prev,
+                        url: generatedUrl,
+                        page_id: null,
+                        label: prev.label ? prev.label : (dept?.name ?? ""),
+                      }));
+                    }}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#186a42] focus:ring-1 focus:ring-[#186a42]"
+                  >
+                    <option value="">-- Select Department --</option>
+                    {selectedAcademicSlug &&
+                      !activeDepartments.some((d) => d.slug === selectedAcademicSlug) && (
+                        <option value={selectedAcademicSlug}>
+                          {selectedAcademicSlug} (Current)
+                        </option>
+                      )}
+                    {activeDepartments.map((dept) => (
+                      <option key={dept.id} value={dept.slug}>
+                        {dept.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Select an active Department.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Generated URL
+                  </label>
+                  <input
+                    type="text"
+                    value={editingItem.url || ""}
+                    readOnly
+                    className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-600 font-mono text-sm outline-none cursor-not-allowed"
+                    placeholder="/academics/departments/[department-slug]"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Read-only canonical URL automatically generated from the selected department slug.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {destinationType === "program" && (
+              <div className="sm:col-span-2 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Academic Destination *
+                  </label>
+                  <select
+                    value={selectedAcademicSlug}
+                    onChange={(e) => {
+                      const slug = e.target.value;
+                      setSelectedAcademicSlug(slug);
+                      const prog = activePrograms.find((p) => p.slug === slug);
+                      const generatedUrl = slug ? `/academics/programs/${slug}` : null;
+                      setEditingItem((prev) => ({
+                        ...prev,
+                        url: generatedUrl,
+                        page_id: null,
+                        label: prev.label ? prev.label : (prog?.name ?? ""),
+                      }));
+                    }}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#186a42] focus:ring-1 focus:ring-[#186a42]"
+                  >
+                    <option value="">-- Select Program --</option>
+                    {selectedAcademicSlug &&
+                      !activePrograms.some((p) => p.slug === selectedAcademicSlug) && (
+                        <option value={selectedAcademicSlug}>
+                          {selectedAcademicSlug} (Current)
+                        </option>
+                      )}
+                    {activePrograms.map((prog) => (
+                      <option key={prog.id} value={prog.slug}>
+                        {prog.name} {prog.degree ? `(${prog.degree})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Select an active Program.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Generated URL
+                  </label>
+                  <input
+                    type="text"
+                    value={editingItem.url || ""}
+                    readOnly
+                    className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-600 font-mono text-sm outline-none cursor-not-allowed"
+                    placeholder="/academics/programs/[program-slug]"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Read-only canonical URL automatically generated from the selected program slug.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {destinationType === "custom" && (
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  URL *
+                </label>
+                <input
+                  type="text"
+                  value={editingItem.url || ""}
+                  onChange={(e) =>
+                    setEditingItem((prev) => ({
+                      ...prev,
+                      url: e.target.value,
+                      page_id: null,
+                    }))
+                  }
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#186a42] focus:ring-1 focus:ring-[#186a42]"
+                  placeholder="e.g. /news or https://example.com"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Enter an internal path (e.g. /news) or external URL (e.g. https://example.com).
+                </p>
+              </div>
+            )}
 
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Parent Item</label>

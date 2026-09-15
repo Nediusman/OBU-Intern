@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminPageHeader } from "@/frontend/admin/components/AdminPageHeader";
 import { AdminBadge } from "@/frontend/admin/components/AdminBadge";
-import { Plus, Edit, Trash2, Search, Filter, Save, X, ImageIcon } from "lucide-react";
+import { AdminImageUpload } from "@/frontend/admin/components/AdminImageUpload";
+import { Plus, Edit, Trash2, Search, Filter, Save, X, ImageIcon, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useHomepageSections } from "@/frontend/admin/hooks/useHomepageSections";
+import { useHomepageSections, type HomepageSectionWithMedia } from "@/frontend/admin/hooks/useHomepageSections";
 import { useMedia } from "@/frontend/admin/hooks/useMedia";
 import type { Database } from "@/frontend/lib/database.types";
 import { toast } from "sonner";
@@ -21,10 +22,11 @@ function HomepageManagement() {
 
   const { query, createMutation, updateMutation, deleteMutation } = useHomepageSections();
   const { query: mediaQuery } = useMedia();
-  const [editingItem, setEditingItem] = useState<Partial<HomepageSectionRow>>({});
+  const [editingItem, setEditingItem] = useState<Partial<HomepageSectionWithMedia>>({});
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   // States for singleton sections (Welcome, Stats, Featured)
-  const [welcomeSection, setWelcomeSection] = useState<Partial<HomepageSectionRow>>({});
+  const [welcomeSection, setWelcomeSection] = useState<Partial<HomepageSectionWithMedia>>({});
 
   // We extract specific sections from the flat list
   const heroSlides = query.data?.filter((s) => s.section_type === "hero") || [];
@@ -37,13 +39,19 @@ function HomepageManagement() {
     }
   }, [query.data]);
 
-  const handleEditHero = (item: HomepageSectionRow) => {
+  const handleEditHero = (item: HomepageSectionWithMedia) => {
     setEditingItem(item);
     setView("editor");
   };
 
   const handleCreateHero = () => {
-    setEditingItem({ section_type: "hero", display_order: 0, is_visible: true });
+    setEditingItem({
+      section_type: "hero",
+      display_order: 0,
+      is_visible: true,
+      image_id: null,
+      media: null,
+    });
     setView("editor");
   };
 
@@ -51,6 +59,22 @@ function HomepageManagement() {
     if (confirm("Are you sure you want to delete this slide?")) {
       deleteMutation.mutate(id);
     }
+  };
+
+  const handleToggleVisibility = (slide: HomepageSectionWithMedia) => {
+    if (togglingId) return;
+    setTogglingId(slide.id);
+    updateMutation.mutate(
+      {
+        id: slide.id,
+        updates: {
+          is_visible: !slide.is_visible,
+        },
+      },
+      {
+        onSettled: () => setTogglingId(null),
+      },
+    );
   };
 
   const handleSaveHero = () => {
@@ -62,12 +86,12 @@ function HomepageManagement() {
     const payload: HomepageSectionInsert = {
       section_type: "hero",
       title: editingItem.title,
-      content: editingItem.content,
-      button_text: editingItem.button_text,
-      button_url: editingItem.button_url,
+      content: editingItem.content || undefined,
+      button_text: editingItem.button_text || undefined,
+      button_url: editingItem.button_url || undefined,
       display_order: editingItem.display_order || 0,
       is_visible: editingItem.is_visible ?? true,
-      image_id: editingItem.image_id || undefined,
+      image_id: (editingItem.image_id ?? null) as any,
     };
 
     if (editingItem.id) {
@@ -85,11 +109,11 @@ function HomepageManagement() {
       section_type: "welcome",
       title: welcomeSection.title || "",
       content: welcomeSection.content || "",
-      button_text: welcomeSection.button_text,
-      button_url: welcomeSection.button_url,
+      button_text: welcomeSection.button_text || undefined,
+      button_url: welcomeSection.button_url || undefined,
       display_order: 0,
       is_visible: welcomeSection.is_visible ?? true,
-      image_id: welcomeSection.image_id || undefined,
+      image_id: (welcomeSection.image_id ?? null) as any,
     };
 
     if (welcomeSection.id) {
@@ -234,22 +258,21 @@ function HomepageManagement() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Background Image
-                </label>
-                <select
-                  value={editingItem.image_id || ""}
-                  onChange={(e) => setEditingItem({ ...editingItem, image_id: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#186a42] focus:ring-[#186a42] sm:text-sm p-2 border"
-                >
-                  <option value="">Select an image</option>
-                  {mediaQuery.data?.map((media) => (
-                    <option key={media.id} value={media.id}>
-                      {media.original_name}
-                    </option>
-                  ))}
-                </select>
+              <div className="border-t border-gray-100 pt-4">
+                <AdminImageUpload
+                  label="Hero Background Image"
+                  description="Recommended banner ratio (16:9 or 21:9). Max 10MB (JPG, PNG, WebP, GIF, SVG)."
+                  value={editingItem.image_id}
+                  imageUrl={editingItem.media?.file_url}
+                  aspectRatio="banner"
+                  onChange={(media) => {
+                    setEditingItem((prev) => ({
+                      ...prev,
+                      image_id: media?.id || null,
+                      media: media ? { id: media.id || "", file_url: media.file_url || "" } : null,
+                    }));
+                  }}
+                />
               </div>
               <div className="pt-4 flex justify-end">
                 <button
@@ -286,6 +309,9 @@ function HomepageManagement() {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                          Image
+                        </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Title
                         </th>
@@ -302,7 +328,24 @@ function HomepageManagement() {
                     </thead>
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {heroSlides.map((slide) => (
-                        <tr key={slide.id}>
+                        <tr key={slide.id} className="hover:bg-gray-50/50 transition-colors">
+                          <td className="whitespace-nowrap px-6 py-4">
+                            {slide.media?.file_url ? (
+                              <img
+                                src={slide.media.file_url}
+                                alt={slide.title || "Hero thumbnail"}
+                                className="h-10 w-16 rounded-md object-cover border border-gray-200 shadow-xs"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src =
+                                    "https://placehold.co/120x80/f3f4f6/9ca3af?text=No+Image";
+                                }}
+                              />
+                            ) : (
+                              <div className="flex h-10 w-16 items-center justify-center rounded-md border border-dashed border-gray-300 bg-gray-50 text-gray-400">
+                                <ImageIcon className="h-5 w-5" />
+                              </div>
+                            )}
+                          </td>
                           <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
                             {slide.title}
                           </td>
@@ -310,7 +353,24 @@ function HomepageManagement() {
                             {slide.display_order}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
-                            <AdminBadge status={slide.is_visible ? "active" : "draft"} />
+                            <button
+                              type="button"
+                              onClick={() => handleToggleVisibility(slide)}
+                              disabled={togglingId === slide.id || updateMutation.isPending}
+                              title={slide.is_visible ? "Click to unpublish" : "Click to publish"}
+                              className="inline-flex items-center gap-1.5 transition-opacity hover:opacity-80 disabled:opacity-50"
+                            >
+                              <AdminBadge status={slide.is_visible ? "active" : "draft"} />
+                              <span className="text-gray-400 hover:text-gray-600">
+                                {togglingId === slide.id ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin text-[#186a42]" />
+                                ) : slide.is_visible ? (
+                                  <EyeOff className="h-3.5 w-3.5" />
+                                ) : (
+                                  <Eye className="h-3.5 w-3.5" />
+                                )}
+                              </span>
+                            </button>
                           </td>
                           <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                             <button
