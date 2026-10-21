@@ -19,6 +19,48 @@ export interface WebsiteSettings extends Record<string, unknown> {
   footer_text?: string;
 }
 
+const DEFAULT_FOOTER_COLUMNS = [
+  {
+    label: "ESSENTIALS",
+    children: [
+      { label: "Contact Us",         to: "/contact" },
+      { label: "Media Gallery",      to: "/galleries" },
+      { label: "Emergency Services", to: "/services" },
+      { label: "Archive",            to: "/news" },
+    ],
+  },
+  {
+    label: "ABOUT US",
+    children: [
+      { label: "History",    to: "/about" },
+      { label: "Leadership", to: "/leadership" },
+      { label: "Presidents", to: "/about/president-message" },
+      { label: "Overview",   to: "/about" },
+    ],
+  },
+  {
+    label: "RESOURCES",
+    children: [
+      { label: "Events",          to: "/events" },
+      { label: "Documents",        to: "/registrar/documents" },
+      { label: "Publications",     to: "/research" },
+      { label: "Services",         to: "/services" },
+      { label: "Programs A to Z",  to: "/academics/programs" },
+      { label: "Privacy Policy",   to: "/privacy-policy" },
+    ],
+  },
+  {
+    label: "QUICK LINKS",
+    children: [
+      { label: "Staff & Admin Portal", to: "/admin" },
+      { label: "Portal",               href: "https://portal.obu.edu.et" },
+      { label: "E-Learning",           href: "https://elearning.obu.edu.et" },
+      { label: "Campus Life",          to: "/about" },
+      { label: "LMS Platform",         href: "https://lms.obu.edu.et" },
+    ],
+  },
+];
+
 export function Footer({
   settings: siteSettings,
 }: {
@@ -33,6 +75,7 @@ export function Footer({
   });
 
   const footerTree = buildNavTree(dbFooterItems);
+  const columns = footerTree.length > 0 ? footerTree : DEFAULT_FOOTER_COLUMNS;
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,16 +145,24 @@ export function Footer({
       </div>
 
       {/* Main footer in OBU Forest Green */}
-      <footer className="bg-[#0c3822] border-t border-emerald-800/40 text-white">
+      <footer className="bg-[#0c3822] border-t border-[#186a42]/40 text-white">
         <div className="container mx-auto px-4 py-16 md:px-6">
           <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
             {/* Brand */}
             <div className="lg:col-span-1 space-y-4">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white p-2.5 shadow-lg ring-2 ring-[#ffcc00]/40 overflow-hidden shrink-0">
+              {/* AAU-style footer logo */}
+              <div className="relative flex h-32 w-32 shrink-0 items-center justify-center">
+                {/* Outer ring */}
+                <div className="absolute inset-0 rounded-full"
+                     style={{ border: "1.5px solid rgba(255,255,255,0.20)" }} />
+                {/* Inner ring */}
+                <div className="absolute inset-[6px] rounded-full"
+                     style={{ border: "1px solid rgba(255,255,255,0.10)" }} />
                 <img
-                  src={siteSettings?.logo_url || "/logo.png"}
+                  src={siteSettings?.logo_url || "/obu_transparen_logos.png"}
                   alt={siteSettings?.university_name || "Oda Bultum University seal"}
-                  className="h-full w-full object-contain"
+                  className="relative z-10 h-[78%] w-[78%] object-contain"
+                  style={{ filter: "invert(1) opacity(0.92)" }}
                 />
               </div>
               <div>
@@ -137,15 +188,20 @@ export function Footer({
                   <Mail className="h-3.5 w-3.5 shrink-0 text-[#ffcc00]" />
                   <span>{siteSettings?.email || "obuofficial@obu.edu.et"}</span>
                 </a>
-                <span className="flex items-start gap-2 text-white/80">
+                <a
+                  href="https://maps.google.com/?cid=9505014483044238404"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-start gap-2 text-white/80 transition-colors hover:text-[#ffcc00]"
+                >
                   <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#ffcc00]" />
                   <span>{siteSettings?.address || "Chiro, West Hararghe, Oromia, Ethiopia"}</span>
-                </span>
+                </a>
               </div>
             </div>
 
             {/* Link columns */}
-            {footerTree.map((column) => (
+            {columns.map((column) => (
               <div key={column.label}>
                 <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-[#ffcc00]">
                   {column.label}
@@ -180,24 +236,31 @@ export function Footer({
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-emerald-900/80 bg-[#082617]">
+        <div className="border-t border-[#186a42]/60 bg-[#0a2818]">
           <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-5 text-xs text-white/60 md:flex-row md:px-6">
             <div className="flex items-center gap-4">
               {[
-                { Icon: Twitter, label: "X (Twitter)", link: siteSettings?.twitter_url },
-                { Icon: Youtube, label: "YouTube", link: siteSettings?.youtube_url },
+                {
+                  Icon: Twitter,
+                  label: "X (Twitter)",
+                  link: siteSettings?.twitter_url || "https://twitter.com/OdaBultumUniv",
+                },
+                {
+                  Icon: Youtube,
+                  label: "YouTube",
+                  link: siteSettings?.youtube_url || "https://www.youtube.com/@odabultumuniversity",
+                },
                 {
                   Icon: Facebook,
                   label: "Facebook",
-                  link: siteSettings?.facebook_url as string | undefined,
+                  link: (siteSettings?.facebook_url as string | undefined) || "https://www.facebook.com/OdaBultumUniversity",
                 },
                 {
                   Icon: Instagram,
                   label: "Instagram",
-                  link: siteSettings?.instagram_url as string | undefined,
+                  link: (siteSettings?.instagram_url as string | undefined) || "https://www.instagram.com/odabultumuniversity",
                 },
               ].map(({ Icon, label, link }) => {
-                if (!link) return null;
                 const href =
                   typeof link === "string" && link.startsWith("http") ? link : `https://${link}`;
                 return (
@@ -213,6 +276,7 @@ export function Footer({
                   </a>
                 );
               })}
+
             </div>
             <p className="text-center md:text-right">
               © {new Date().getFullYear()}{" "}

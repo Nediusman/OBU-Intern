@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 import dotenv from "dotenv";
 import path from "path";
 
-dotenv.config({ path: path.resolve(process.cwd(), "src/backend/.env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 export default defineConfig({
   envPrefix: ["VITE_", "VITE_SUPABASE_URL", "VITE_SUPABASE_PUBLISHABLE_KEY"],
