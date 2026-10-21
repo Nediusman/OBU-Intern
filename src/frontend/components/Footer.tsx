@@ -150,19 +150,12 @@ export function Footer({
           <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
             {/* Brand */}
             <div className="lg:col-span-1 space-y-4">
-              {/* AAU-style footer logo */}
-              <div className="relative flex h-32 w-32 shrink-0 items-center justify-center">
-                {/* Outer ring */}
-                <div className="absolute inset-0 rounded-full"
-                     style={{ border: "1.5px solid rgba(255,255,255,0.20)" }} />
-                {/* Inner ring */}
-                <div className="absolute inset-[6px] rounded-full"
-                     style={{ border: "1px solid rgba(255,255,255,0.10)" }} />
+              {/* University seal — solid white circle with colored logo */}
+              <div className="relative flex h-32 w-32 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_0_0_3px_rgba(255,204,0,0.3),0_0_0_6px_rgba(255,255,255,0.08)]">
                 <img
-                  src={siteSettings?.logo_url || "/obu_transparen_logos.png"}
+                  src={siteSettings?.logo_url || "/logo.png"}
                   alt={siteSettings?.university_name || "Oda Bultum University seal"}
-                  className="relative z-10 h-[78%] w-[78%] object-contain"
-                  style={{ filter: "invert(1) opacity(0.92)" }}
+                  className="h-[85%] w-[85%] object-contain"
                 />
               </div>
               <div>
