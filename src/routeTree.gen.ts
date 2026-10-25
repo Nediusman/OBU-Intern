@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as GovernanceRouteImport } from './routes/governance'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as AboutIndexRouteImport } from './routes/about.index'
+import { Route as AboutMissionVisionRouteImport } from './routes/about.mission-vision'
 import { Route as AboutPresidentMessageRouteImport } from './routes/about.president-message'
 import { Route as AcademicsIndexRouteImport } from './routes/academics.index'
 import { Route as AcademicsSlugRouteImport } from './routes/academics.$slug'
@@ -105,6 +107,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GovernanceRoute = GovernanceRouteImport.update({
+  id: '/governance',
+  path: '/governance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
@@ -113,6 +120,11 @@ const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutMissionVisionRoute = AboutMissionVisionRouteImport.update({
+  id: '/about/mission-vision',
+  path: '/about/mission-vision',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutPresidentMessageRoute = AboutPresidentMessageRouteImport.update({
@@ -474,7 +486,9 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/governance': typeof GovernanceRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/about/mission-vision': typeof AboutMissionVisionRoute
   '/about/president-message': typeof AboutPresidentMessageRoute
   '/academics/$slug': typeof AcademicsSlugRoute
   '/admin/account': typeof AdminAccountRoute
@@ -550,7 +564,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/governance': typeof GovernanceRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/about/mission-vision': typeof AboutMissionVisionRoute
   '/about/president-message': typeof AboutPresidentMessageRoute
   '/academics/$slug': typeof AcademicsSlugRoute
   '/admin/account': typeof AdminAccountRoute
@@ -628,7 +644,9 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/governance': typeof GovernanceRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/about/mission-vision': typeof AboutMissionVisionRoute
   '/about/president-message': typeof AboutPresidentMessageRoute
   '/academics/$slug': typeof AcademicsSlugRoute
   '/admin/account': typeof AdminAccountRoute
@@ -707,7 +725,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/careers'
     | '/contact'
+    | '/governance'
     | '/privacy-policy'
+    | '/about/mission-vision'
     | '/about/president-message'
     | '/academics/$slug'
     | '/admin/account'
@@ -783,7 +803,9 @@ export interface FileRouteTypes {
     | '/'
     | '/careers'
     | '/contact'
+    | '/governance'
     | '/privacy-policy'
+    | '/about/mission-vision'
     | '/about/president-message'
     | '/academics/$slug'
     | '/admin/account'
@@ -860,7 +882,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/careers'
     | '/contact'
+    | '/governance'
     | '/privacy-policy'
+    | '/about/mission-vision'
     | '/about/president-message'
     | '/academics/$slug'
     | '/admin/account'
@@ -938,7 +962,9 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
+  GovernanceRoute: typeof GovernanceRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  AboutMissionVisionRoute: typeof AboutMissionVisionRoute
   AboutPresidentMessageRoute: typeof AboutPresidentMessageRoute
   AcademicsSlugRoute: typeof AcademicsSlugRoute
   AdministrationSlugRoute: typeof AdministrationSlugRoute
@@ -1005,6 +1031,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/governance': {
+      id: '/governance'
+      path: '/governance'
+      fullPath: '/governance'
+      preLoaderRoute: typeof GovernanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy-policy': {
       id: '/privacy-policy'
       path: '/privacy-policy'
@@ -1017,6 +1050,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/mission-vision': {
+      id: '/about/mission-vision'
+      path: '/about/mission-vision'
+      fullPath: '/about/mission-vision'
+      preLoaderRoute: typeof AboutMissionVisionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/president-message': {
@@ -1600,7 +1640,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
+  GovernanceRoute: GovernanceRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  AboutMissionVisionRoute: AboutMissionVisionRoute,
   AboutPresidentMessageRoute: AboutPresidentMessageRoute,
   AcademicsSlugRoute: AcademicsSlugRoute,
   AdministrationSlugRoute: AdministrationSlugRoute,

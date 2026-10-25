@@ -17,6 +17,7 @@ import {
   ArrowRight,
   RotateCcw,
   Building2,
+  Shield,
 } from "lucide-react";
 import { supabase } from "@/frontend/lib/supabase";
 import { getSiteSettings, submitContactMessage } from "@/backend/api";
@@ -54,6 +55,7 @@ interface ContactFormData {
 function Contact() {
   const [sent, setSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [consentAgreed, setConsentAgreed] = useState(false);
 
   // Form local state
   const [formData, setFormData] = useState<ContactFormData>({
@@ -133,6 +135,11 @@ function Contact() {
       !formData.message.trim()
     ) {
       setErrorMessage("Please complete all required fields (Name, Email, Subject, and Message).");
+      return;
+    }
+
+    if (!consentAgreed) {
+      setErrorMessage("You must agree to the OBU Privacy and Personal Data Protection Policy before submitting an inquiry.");
       return;
     }
 
@@ -281,6 +288,25 @@ function Contact() {
                   >
                     Registrar Portal
                   </Link>
+                  .
+                </div>
+              </div>
+
+              {/* Data Protection Focal Person Card (Section 11) */}
+              <div className="bg-emerald-50/60 border border-emerald-200/70 rounded-3xl p-6 flex items-start gap-3 text-xs text-gray-700 leading-relaxed shadow-xs">
+                <Shield className="w-5 h-5 text-[#186a42] shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-gray-900 font-bold block mb-1">
+                    Data Protection & Privacy Oversight
+                  </strong>
+                  To exercise your data privacy rights, request record correction, or inquire about data handling under Ethiopian law and the{" "}
+                  <Link to="/governance" className="text-[#186a42] font-semibold underline hover:text-[#125333]">
+                    OBU Website Policy
+                  </Link>
+                  , contact our Data Protection Focal Person at{" "}
+                  <a href="mailto:dataprotection@obu.edu.et" className="text-[#186a42] font-bold underline">
+                    dataprotection@obu.edu.et
+                  </a>
                   .
                 </div>
               </div>
@@ -449,6 +475,29 @@ function Contact() {
                             className="w-full p-4 rounded-2xl bg-gray-50/80 border border-gray-200 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#186a42] focus:border-transparent transition-all shadow-sm resize-none"
                           />
                         </div>
+                      </div>
+
+                      {/* Privacy Consent Checkbox (Policy Section 11) */}
+                      <div className="flex items-start gap-3 p-4 bg-emerald-50/60 border border-emerald-200/70 rounded-2xl text-xs text-gray-700">
+                        <input
+                          id="privacy-consent"
+                          type="checkbox"
+                          required
+                          checked={consentAgreed}
+                          onChange={(e) => setConsentAgreed(e.target.checked)}
+                          className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#186a42] focus:ring-[#186a42] cursor-pointer"
+                        />
+                        <label htmlFor="privacy-consent" className="cursor-pointer leading-relaxed">
+                          I have read and consent to the{" "}
+                          <Link
+                            to="/privacy-policy"
+                            target="_blank"
+                            className="font-bold text-[#186a42] underline hover:text-[#125333]"
+                          >
+                            Oda Bultum University Privacy and Personal Data Protection Policy
+                          </Link>
+                          . I understand that my contact details will be processed solely to address this institutional inquiry.
+                        </label>
                       </div>
 
                       {/* Submit Button */}

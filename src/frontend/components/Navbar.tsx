@@ -11,18 +11,20 @@ import {
   Twitter,
   Youtube,
   Instagram,
+  AlertTriangle,
 } from "lucide-react";
 import { useAuth } from "@/frontend/contexts/AuthContext";
+import { useLanguage } from "@/frontend/contexts/LanguageContext";
 
 import { NavItem, buildNavTree } from "@/frontend/services/navigation.service";
 import { useQuery } from "@tanstack/react-query";
 import { getNavigationItems } from "@/backend/api";
 
 const socials = [
-  { Icon: Facebook, label: "Facebook", key: "facebook_url" },
-  { Icon: Twitter, label: "X (Twitter)", key: "twitter_url" },
-  { Icon: Youtube, label: "YouTube", key: "youtube_url" },
-  { Icon: Instagram, label: "Instagram", key: "instagram_url" },
+  { Icon: Facebook,  label: "Facebook",   key: "facebook_url",  fallback: "https://www.facebook.com/OdaBultumUniversity" },
+  { Icon: Twitter,   label: "X (Twitter)", key: "twitter_url",   fallback: "https://twitter.com/OdaBultumUniv" },
+  { Icon: Youtube,   label: "YouTube",     key: "youtube_url",   fallback: "https://www.youtube.com/@odabultumuniversity" },
+  { Icon: Instagram, label: "Instagram",   key: "instagram_url", fallback: "https://www.instagram.com/odabultumuniversity" },
 ];
 
 import { type WebsiteSettings } from "./Footer";
@@ -243,6 +245,7 @@ export function Navbar({ settings }: { settings?: WebsiteSettings | SiteSettings
   const [open, setOpen] = useState(false);
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
   const { currentUser } = useAuth();
+  const { t } = useLanguage();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const toggleOpen = (id: string) => {
@@ -272,54 +275,96 @@ export function Navbar({ settings }: { settings?: WebsiteSettings | SiteSettings
     return false;
   };
 
+  const emergencyBannerEnabled =
+    settings?.["emergency_banner_enabled"] === "true" ||
+    settings?.["emergency_banner_enabled"] === true;
+  const emergencyBannerText = (settings?.["emergency_banner_text"] as string) || "";
+  const emergencyBannerLink = (settings?.["emergency_banner_link"] as string) || "";
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-xs transition-all duration-300">
-      {/* Top Bar (Dark Green) */}
-      <div className="hidden obu-gradient xl:block border-b border-emerald-900/30">
-        <div className="container mx-auto flex h-9 items-center justify-between gap-6 px-4 text-xs font-medium text-white/90 md:px-8 max-w-screen-2xl">
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2">
-              <MapPin className="h-3.5 w-3.5 text-[#ffcc00] shrink-0" />
-              {settings?.address || "P.O. Box 226, Oda Bultum University, Chiro, Ethiopia"}
+    <>
+      {/* Accessibility: Skip to Main Content Link (Section 9) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#ffcc00] focus:text-[#0c3822] focus:font-bold focus:rounded-xl focus:shadow-2xl focus:ring-2 focus:ring-[#0c3822] focus:outline-none transition-all"
+      >
+        {t("skip_to_content", "Skip to main content")}
+      </a>
+
+      {/* Expedited Emergency Notice Banner (Policy Section 7.1) */}
+      {emergencyBannerEnabled && emergencyBannerText && (
+        <aside
+          role="alert"
+          aria-label="Campus emergency notice"
+          className="bg-amber-500 text-amber-950 px-4 py-2.5 text-xs md:text-sm font-semibold border-b border-amber-600 shadow-inner flex items-center justify-between"
+        >
+          <div className="container mx-auto flex items-center justify-center gap-2.5 text-center flex-wrap">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-950 animate-bounce" />
+            <span>
+              <strong>{t("emergency_notice", "Urgent Notice")}:</strong> {emergencyBannerText}
             </span>
-            <a
-              href={`mailto:${settings?.email || "obuofficial@obu.edu.et"}`}
-              className="flex items-center gap-2 transition-colors hover:text-[#ffcc00]"
-            >
-              <Mail className="h-3.5 w-3.5 text-[#ffcc00] shrink-0" />
-              obuofficial@obu.edu.et
-            </a>
-            <a
-              href={`tel:${settings?.phone || "+251256510040"}`}
-              className="flex items-center gap-2 transition-colors hover:text-[#ffcc00]"
-            >
-              <Phone className="h-3.5 w-3.5 text-[#ffcc00] shrink-0" />
-              +251256510040
-            </a>
+            {emergencyBannerLink && (
+              <a
+                href={emergencyBannerLink}
+                className="inline-flex items-center gap-1 font-bold underline hover:text-white transition-colors ml-2"
+              >
+                {t("read_more", "Read details")} &rarr;
+              </a>
+            )}
           </div>
-          <div className="flex items-center gap-4">
-            {socials.map(({ Icon, label, key }) => {
-              const url = (settings?.[key] as string | undefined) || "";
-              if (!url) return null;
-              return (
-                <a
-                  key={label}
-                  href={url}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={label}
-                  className="text-white/80 transition-all hover:text-[#ffcc00] hover:scale-110"
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                </a>
-              );
-            })}
+        </aside>
+      )}
+
+      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-xs transition-all duration-300">
+        {/* Top Bar (Dark Green) */}
+        <div className="hidden obu-gradient xl:block border-b border-emerald-900/30">
+          <div className="container mx-auto flex h-9 items-center justify-between gap-4 px-4 text-xs font-medium text-white/90 md:px-8 max-w-screen-2xl">
+            <div className="flex items-center gap-6">
+              <span className="flex items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 text-[#ffcc00] shrink-0" />
+                {settings?.address || "P.O. Box 226, Oda Bultum University, Chiro, Ethiopia"}
+              </span>
+              <a
+                href={`mailto:${settings?.email || "obuofficial@obu.edu.et"}`}
+                className="flex items-center gap-2 transition-colors hover:text-[#ffcc00]"
+              >
+                <Mail className="h-3.5 w-3.5 text-[#ffcc00] shrink-0" />
+                obuofficial@obu.edu.et
+              </a>
+              <a
+                href={`tel:${settings?.phone || "+251256510040"}`}
+                className="flex items-center gap-2 transition-colors hover:text-[#ffcc00]"
+              >
+                <Phone className="h-3.5 w-3.5 text-[#ffcc00] shrink-0" />
+                +251256510040
+              </a>
+            </div>
+
+            <div className="flex items-center gap-4">
+              {/* Social Media Links (Policy Section 12) */}
+              <div className="flex items-center gap-3">
+                {socials.map(({ Icon, label, key, fallback }) => {
+                  const url = (settings?.[key] as string | undefined) || fallback;
+                  return (
+                    <a
+                      key={label}
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={label}
+                      className="text-white/80 transition-all hover:text-[#ffcc00] hover:scale-110"
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Navbar (White) */}
-      <div className="container mx-auto flex h-[80px] sm:h-[88px] items-center justify-between px-3 sm:px-4 xl:px-4 2xl:px-8 max-w-screen-2xl">
+        {/* Main Navbar (White) */}
+        <div className="container mx-auto flex h-[80px] sm:h-[88px] items-center justify-between px-3 sm:px-4 xl:px-4 2xl:px-8 max-w-screen-2xl">
         <Link
           to="/"
           className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0 pr-2 sm:pr-3 select-none"
@@ -437,5 +482,6 @@ export function Navbar({ settings }: { settings?: WebsiteSettings | SiteSettings
         </div>
       )}
     </header>
+    </>
   );
 }

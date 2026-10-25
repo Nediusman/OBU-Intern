@@ -271,6 +271,20 @@ function ProgramDetail() {
                   </li>
                 )}
               </ul>
+
+              <div className="mt-6 pt-4 border-t border-gray-100 flex items-center gap-2 text-xs text-gray-500">
+                <Clock className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                <span>
+                  Last Updated:{" "}
+                  {program.updated_at
+                    ? new Date(program.updated_at).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
+                    : "Current Academic Semester"}
+                </span>
+              </div>
             </div>
           </div>
         </div>

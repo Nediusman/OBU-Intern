@@ -54,6 +54,7 @@ function AnnouncementsIndex() {
   const { announcements } = Route.useLoaderData();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [statusFilter, setStatusFilter] = useState<"active" | "archived" | "all">("active");
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -67,7 +68,13 @@ function AnnouncementsIndex() {
 
   // Filter announcements
   const filteredAnnouncements = useMemo(() => {
+    const now = new Date();
     return announcements.filter((ann) => {
+      const isExpired = Boolean(ann.expires_at && new Date(ann.expires_at) < now);
+
+      if (statusFilter === "active" && isExpired) return false;
+      if (statusFilter === "archived" && !isExpired && ann.status !== "archived") return false;
+
       const matchesSearch =
         search === "" ||
         ann.title?.toLowerCase().includes(search.toLowerCase()) ||
@@ -78,7 +85,7 @@ function AnnouncementsIndex() {
 
       return matchesSearch && matchesCat;
     });
-  }, [announcements, search, selectedCategory]);
+  }, [announcements, search, selectedCategory, statusFilter]);
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -124,32 +131,66 @@ function AnnouncementsIndex() {
               />
             </div>
 
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-200/60">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-400 mr-2 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-[#ffcc00]" /> Filter:
-              </span>
-              {categories.map((cat) => {
-                const isSelected = selectedCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                      isSelected
-                        ? "bg-[#186a42] text-white shadow-md shadow-[#186a42]/20"
-                        : "bg-white text-gray-600 border border-gray-200 hover:border-[#186a42] hover:text-[#186a42]"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
+            {/* Category & Status Filter Pills */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-gray-200/60">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-400 mr-1 flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-[#ffcc00]" /> Category:
+                </span>
+                {categories.map((cat) => {
+                  const isSelected = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                        isSelected
+                          ? "bg-[#186a42] text-white shadow-md shadow-[#186a42]/20"
+                          : "bg-white text-gray-600 border border-gray-200 hover:border-[#186a42] hover:text-[#186a42]"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
 
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-2">
-                Showing <strong className="text-[#186a42]">{filteredAnnouncements.length}</strong>{" "}
-                Notices
-              </span>
+              {/* Status Archive Filter (Policy Section 7.2) */}
+              <div className="flex items-center gap-1.5 bg-gray-200/60 p-1 rounded-xl text-xs font-semibold">
+                <button
+                  type="button"
+                  onClick={() => setStatusFilter("active")}
+                  className={`px-3 py-1 rounded-lg transition-colors ${
+                    statusFilter === "active"
+                      ? "bg-white text-[#186a42] shadow-xs font-bold"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Active Notices
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStatusFilter("archived")}
+                  className={`px-3 py-1 rounded-lg transition-colors ${
+                    statusFilter === "archived"
+                      ? "bg-white text-amber-800 shadow-xs font-bold"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Archive
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStatusFilter("all")}
+                  className={`px-3 py-1 rounded-lg transition-colors ${
+                    statusFilter === "all"
+                      ? "bg-white text-gray-900 shadow-xs font-bold"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  All ({announcements.length})
+                </button>
+              </div>
             </div>
           </div>
 

@@ -48,6 +48,9 @@ scratch.*
 lint_output.txt
 *.patch
 test-output.html
+__pycache__/
+*.zip
+
 check_*.js
 test_*.js
 test_*.cjs
@@ -60,3 +63,4 @@ create_admin.js
 schema_actual.txt
 supabase_openapi.json
 
+.~lock.*

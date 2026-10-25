@@ -1,7 +1,7 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { Breadcrumbs } from "@/frontend/components/Breadcrumbs";
 import { supabase } from "@/frontend/lib/supabase";
-import { Mail, Phone, User, ChevronRight, GraduationCap, BookOpen } from "lucide-react";
+import { Mail, Phone, User, ChevronRight, GraduationCap, BookOpen, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/academics/departments/$slug")({
   component: DepartmentDetail,
@@ -297,6 +297,20 @@ function DepartmentDetail() {
                     No contact information available.
                   </div>
                 )}
+
+                <div className="flex items-center gap-2 text-xs text-gray-500 pt-4 border-t border-gray-100">
+                  <Clock className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                  <span>
+                    Last Updated:{" "}
+                    {department.updated_at
+                      ? new Date(department.updated_at).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })
+                      : "Current Academic Semester"}
+                  </span>
+                </div>
               </dl>
             </div>
           </div>

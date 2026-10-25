@@ -178,16 +178,20 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { LanguageProvider } from "@/frontend/contexts/LanguageContext";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
       <LegacyAuthProvider>
-        <TooltipProvider delayDuration={200}>
-          <AppShell />
-          <Toaster richColors position="top-right" />
-        </TooltipProvider>
+        <LanguageProvider>
+          <TooltipProvider delayDuration={200}>
+            <AppShell />
+            <Toaster richColors position="top-right" />
+          </TooltipProvider>
+        </LanguageProvider>
       </LegacyAuthProvider>
     </QueryClientProvider>
   );
@@ -209,7 +213,7 @@ function AppShell() {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar settings={settings || undefined} />
-      <main className="flex-1">
+      <main className="flex-1 focus:outline-none" id="main-content" tabIndex={-1}>
         <Outlet />
       </main>
       <Footer settings={settings || undefined} />

@@ -11,6 +11,8 @@ import {
   AlertCircle,
   MessageSquare,
   ArrowRight,
+  Shield,
+  Clock,
 } from "lucide-react";
 import { useDashboardStats } from "@/frontend/admin/hooks/useDashboard";
 import { formatDistanceToNow } from "date-fns";
@@ -180,6 +182,57 @@ function Dashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Official Website Governance Monitoring (Policy Section 7.3 & 15) */}
+      <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 border-l-4 border-[#186a42]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2.5">
+            <Shield className="h-5 w-5 text-[#186a42]" />
+            <div>
+              <h2 className="text-base font-bold text-gray-900">Website Governance & Content Health (Policy Sec 7.3)</h2>
+              <p className="text-xs text-gray-500">Tracking institutional review frequency standards mandated by the Web Governance Committee.</p>
+            </div>
+          </div>
+          <Link
+            to="/governance"
+            target="_blank"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#186a42] hover:underline"
+          >
+            View Full Policy Document &rarr;
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs pt-2">
+          <div className="p-3 bg-emerald-50/70 rounded-lg border border-emerald-100 flex items-center justify-between">
+            <div>
+              <span className="font-bold text-emerald-950 block">Homepage & News</span>
+              <span className="text-emerald-700 text-[11px]">Daily / Continuous</span>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-bold text-[10px]">ACTIVE</span>
+          </div>
+          <div className="p-3 bg-emerald-50/70 rounded-lg border border-emerald-100 flex items-center justify-between">
+            <div>
+              <span className="font-bold text-emerald-950 block">Academic Departments</span>
+              <span className="text-emerald-700 text-[11px]">Once Per Semester</span>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-bold text-[10px]">COMPLIANT</span>
+          </div>
+          <div className="p-3 bg-emerald-50/70 rounded-lg border border-emerald-100 flex items-center justify-between">
+            <div>
+              <span className="font-bold text-emerald-950 block">Admissions & Registrar</span>
+              <span className="text-emerald-700 text-[11px]">Before Intake Cycle</span>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-bold text-[10px]">ACTIVE</span>
+          </div>
+          <div className="p-3 bg-blue-50/70 rounded-lg border border-blue-100 flex items-center justify-between">
+            <div>
+              <span className="font-bold text-blue-950 block">Technical Audit & SSL</span>
+              <span className="text-blue-700 text-[11px]">Monthly (ICT Directorate)</span>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-blue-200 text-blue-900 font-bold text-[10px]">SCHEDULED</span>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

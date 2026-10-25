@@ -155,14 +155,35 @@ function AdministrationDetail() {
               <dl className="space-y-6">
                 {office.head_of_office && (
                   <div className="flex items-start gap-4">
-                    <div className="mt-1 bg-[#186a42]/10 p-2.5 rounded-xl text-[#186a42] shrink-0">
-                      <User className="w-4 h-4" />
-                    </div>
-                    <div>
+                    {office.head_image ? (
+                      <div className="w-14 h-14 rounded-2xl overflow-hidden shrink-0 border-2 border-[#186a42]/20 shadow-md">
+                        <img
+                          src={office.head_image}
+                          alt={office.head_of_office}
+                          className="w-full h-full object-cover object-top"
+                        />
+                      </div>
+                    ) : (
+                      <div className="mt-1 bg-[#186a42]/10 p-2.5 rounded-xl text-[#186a42] shrink-0">
+                        <User className="w-4 h-4" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
                       <dt className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">
                         Head of Office
                       </dt>
-                      <dd className="text-base font-bold text-gray-900">{office.head_of_office}</dd>
+                      <dd className="text-base font-bold text-gray-900 leading-snug">
+                        {office.head_of_office}
+                      </dd>
+                      {office.head_slug && (
+                        <Link
+                          to="/leadership/$slug"
+                          params={{ slug: office.head_slug }}
+                          className="inline-flex items-center gap-1 text-xs font-bold text-[#186a42] hover:underline mt-1.5"
+                        >
+                          View Executive Profile →
+                        </Link>
+                      )}
                     </div>
                   </div>
                 )}

@@ -47,6 +47,7 @@ const DEFAULT_FOOTER_COLUMNS = [
       { label: "Services",         to: "/services" },
       { label: "Programs A to Z",  to: "/academics/programs" },
       { label: "Privacy Policy",   to: "/privacy-policy" },
+      { label: "Website Policy",   to: "/governance" },
     ],
   },
   {
@@ -141,6 +142,13 @@ export function Footer({
               </button>
             </form>
           )}
+          <p className="mt-3 text-center text-xs text-gray-500">
+            By subscribing, you agree to our{" "}
+            <Link to="/privacy-policy" className="text-emerald-700 underline font-medium hover:text-emerald-800">
+              Privacy Policy
+            </Link>{" "}
+            and website data protection standards.
+          </p>
         </div>
       </div>
 

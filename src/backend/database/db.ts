@@ -272,6 +272,41 @@ async function seedDatabase(pool: Pool) {
       ('nav-5','OBU-FTP','http://10.140.8.6','Quick Links',5,'active'),
       ('nav-6','OBU Institutional Email','https://office.com','Quick Links',6,'active');
 
+    CREATE TABLE IF NOT EXISTS navigation_items (
+      id            TEXT PRIMARY KEY,
+      menu          TEXT NOT NULL DEFAULT 'main',
+      label         TEXT NOT NULL,
+      url           TEXT,
+      page_id       TEXT,
+      page_slug     TEXT,
+      parent_id     TEXT REFERENCES navigation_items(id) ON DELETE CASCADE,
+      display_order INTEGER DEFAULT 0,
+      status        TEXT DEFAULT 'active',
+      open_new_tab  BOOLEAN DEFAULT FALSE,
+      created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    INSERT INTO navigation_items (id, menu, label, url, parent_id, display_order, status) VALUES
+      ('main-home',      'main', 'Home',        '/',                  NULL,            1,  'active'),
+      ('main-about',     'main', 'About',        NULL,                 NULL,            2,  'active'),
+      ('main-about-pm',  'main', 'President''s Message', '/about/president-message', 'main-about', 1, 'active'),
+      ('main-about-mv',  'main', 'Mission & Vision',     '/about/mission-vision',    'main-about', 2, 'active'),
+      ('main-about-gov', 'main', 'Governance',           '/about/governance',        'main-about', 3, 'active'),
+      ('main-academics', 'main', 'Academics',    NULL,                 NULL,            3,  'active'),
+      ('main-acad-prog', 'main', 'Programs',     '/academics/programs','main-academics',1,  'active'),
+      ('main-acad-fac',  'main', 'Faculties',    '/academics/faculties','main-academics',2, 'active'),
+      ('main-research',  'main', 'Research',     NULL,                 NULL,            4,  'active'),
+      ('main-res-cent',  'main', 'Research Centers', '/research/centers','main-research',1, 'active'),
+      ('main-res-pub',   'main', 'Publications', '/research/publications','main-research',2,'active'),
+      ('main-news',      'main', 'News & Events',NULL,                 NULL,            5,  'active'),
+      ('main-news-n',    'main', 'News',         '/news',              'main-news',     1,  'active'),
+      ('main-news-e',    'main', 'Events',       '/events',            'main-news',     2,  'active'),
+      ('main-news-ann',  'main', 'Announcements','/announcements',     'main-news',     3,  'active'),
+      ('main-admissions','main', 'Admissions',   '/admissions',        NULL,            6,  'active'),
+      ('main-contact',   'main', 'Contact',      '/contact',           NULL,            7,  'active')
+    ON CONFLICT (id) DO NOTHING;
+
     INSERT INTO hero_slides (id, title, subtitle, description, button_text, button_url, sort_order, status, image) VALUES
       ('hero-1', 'Excellence in Teaching, Research and Community Service', 'Oda Bultum University', 'A public university serving West Hararghe and beyond since 2015.', 'Discover OBU', '/about', 1, 'published', 'campus-aerial.jpg'),
       ('hero-2', '2026 Postgraduate Admissions Now Open', 'Admissions', 'Applications for 18 masters programs close on 30 June 2026.', 'Apply Now', '/admissions', 2, 'published', NULL);

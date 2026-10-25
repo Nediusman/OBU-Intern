@@ -8,6 +8,58 @@ export const Route = createFileRoute("/admin/system/roles")({
   component: RolesPermissionsManagement,
 });
 
+const STATUTORY_POLICY_ROLES = [
+  {
+    id: "role-super-admin",
+    name: "Super Administrator",
+    description: "Unrestricted institutional access across all modules, servers, and database records.",
+    permissions: { view: true, create: true, edit: true, delete: true, publish: true },
+    isStatutory: true,
+  },
+  {
+    id: "role-ict-webmaster",
+    name: "ICT Directorate / Web Administrator",
+    description: "Technical custodian: server maintenance, CMS infrastructure, user accounts, and emergency alerts.",
+    permissions: { view: true, create: true, edit: true, delete: true, publish: true },
+    isStatutory: true,
+  },
+  {
+    id: "role-pir-editorial",
+    name: "Directorate of Public & International Relations",
+    description: "Editorial authority: approves news, press releases, public announcements, and brand standards.",
+    permissions: { view: true, create: true, edit: true, delete: false, publish: true },
+    isStatutory: true,
+  },
+  {
+    id: "role-dept-editor",
+    name: "College / Department Content Editor",
+    description: "Content contributor: drafts and updates specific faculty, department, curriculum, and program pages.",
+    permissions: { view: true, create: true, edit: true, delete: false, publish: false },
+    isStatutory: true,
+  },
+  {
+    id: "role-governance-comm",
+    name: "Web Governance Committee",
+    description: "Oversight body: reviews structural changes, monitors compliance, and resolves content disputes.",
+    permissions: { view: true, create: false, edit: false, delete: false, publish: false },
+    isStatutory: true,
+  },
+  {
+    id: "role-data-protection",
+    name: "Data Protection Focal Person",
+    description: "Privacy oversight: monitors handling of personal data submitted via contact forms and student portals.",
+    permissions: { view: true, create: false, edit: false, delete: false, publish: false },
+    isStatutory: true,
+  },
+  {
+    id: "role-president-exec",
+    name: "Office of the President / Executive",
+    description: "Final institutional authority: reviews and approves policy declarations and sensitive announcements.",
+    permissions: { view: true, create: true, edit: true, delete: false, publish: true },
+    isStatutory: true,
+  },
+];
+
 function RolesPermissionsManagement() {
   const [view, setView] = useState<"list" | "editor">("list");
   const { query, createMutation } = useRoles();
@@ -80,11 +132,16 @@ function RolesPermissionsManagement() {
     );
   }
 
+  // Combine statutory roles with custom created roles
+  const customRoles = (query.data || []).filter(
+    (r) => !STATUTORY_POLICY_ROLES.some((s) => s.name.toLowerCase() === r.name.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title="Roles & Permissions Matrix"
-        description="Define roles and their granular access permissions across the system."
+        title="Governance Roles & Permissions Matrix"
+        description="Statutory roles established under Section 6 of the Official Website Governance Policy, plus custom roles."
         action={
           <button
             onClick={handleCreate}
@@ -104,7 +161,7 @@ function RolesPermissionsManagement() {
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Role
+                Role & Function
               </th>
               <th
                 scope="col"
@@ -142,84 +199,73 @@ function RolesPermissionsManagement() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-            {query.isLoading && (
-              <tr>
-                <td colSpan={7} className="p-8 text-center text-gray-500">
-                  Loading roles...
+            {/* Render Statutory Policy Roles */}
+            {STATUTORY_POLICY_ROLES.map((role) => (
+              <tr key={role.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-gray-900">{role.name}</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      Policy Sec 6
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 max-w-sm">{role.description}</div>
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  {role.permissions.view ? <Check className="mx-auto h-5 w-5 text-green-500" /> : <X className="mx-auto h-5 w-5 text-gray-300" />}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  {role.permissions.create ? <Check className="mx-auto h-5 w-5 text-green-500" /> : <X className="mx-auto h-5 w-5 text-gray-300" />}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  {role.permissions.edit ? <Check className="mx-auto h-5 w-5 text-green-500" /> : <X className="mx-auto h-5 w-5 text-gray-300" />}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  {role.permissions.delete ? <Check className="mx-auto h-5 w-5 text-green-500" /> : <X className="mx-auto h-5 w-5 text-gray-300" />}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  {role.permissions.publish ? <Check className="mx-auto h-5 w-5 text-green-500" /> : <X className="mx-auto h-5 w-5 text-gray-300" />}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-right text-xs font-semibold text-gray-400">
+                  Statutory
                 </td>
               </tr>
-            )}
-            {!query.isLoading && (!query.data || query.data.length === 0) && (
-              <tr>
-                <td colSpan={7} className="p-8 text-center text-gray-500">
-                  No roles found.
+            ))}
+
+            {/* Custom Roles */}
+            {customRoles.map((role) => (
+              <tr key={role.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-gray-900">{role.name}</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-700">
+                      Custom
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 max-w-sm">{role.description || "User-defined custom role."}</div>
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  <Check className="mx-auto h-5 w-5 text-green-500" />
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  <Check className="mx-auto h-5 w-5 text-green-500" />
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  <Check className="mx-auto h-5 w-5 text-green-500" />
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  <X className="mx-auto h-5 w-5 text-gray-300" />
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-center">
+                  <X className="mx-auto h-5 w-5 text-gray-300" />
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                  <button className="text-gray-400 hover:text-red-600 transition-colors" title="Delete Role">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </td>
               </tr>
-            )}
-            {query.data?.map((role) => {
-              const isSuperAdmin = role.name.toLowerCase() === "super admin";
-              return (
-                <tr key={role.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-semibold text-gray-900">{role.name}</div>
-                    <div className="text-xs text-gray-500 mt-1 max-w-xs">{role.description}</div>
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center">
-                    {isSuperAdmin ? (
-                      <Check className="mx-auto h-5 w-5 text-green-500" />
-                    ) : (
-                      <X className="mx-auto h-5 w-5 text-gray-300" />
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center">
-                    {isSuperAdmin ? (
-                      <Check className="mx-auto h-5 w-5 text-green-500" />
-                    ) : (
-                      <X className="mx-auto h-5 w-5 text-gray-300" />
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center">
-                    {isSuperAdmin ? (
-                      <Check className="mx-auto h-5 w-5 text-green-500" />
-                    ) : (
-                      <X className="mx-auto h-5 w-5 text-gray-300" />
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center">
-                    {isSuperAdmin ? (
-                      <Check className="mx-auto h-5 w-5 text-green-500" />
-                    ) : (
-                      <X className="mx-auto h-5 w-5 text-gray-300" />
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center">
-                    {isSuperAdmin ? (
-                      <Check className="mx-auto h-5 w-5 text-green-500" />
-                    ) : (
-                      <X className="mx-auto h-5 w-5 text-gray-300" />
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                    <div className="flex justify-end gap-3">
-                      <button
-                        className="text-gray-400 hover:text-blue-600 transition-colors"
-                        title="Edit Role Permissions"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      {!isSuperAdmin && (
-                        <button
-                          className="text-gray-400 hover:text-red-600 transition-colors"
-                          title="Delete Role"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+            ))}
           </tbody>
         </table>
       </div>

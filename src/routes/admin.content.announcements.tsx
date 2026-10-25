@@ -95,7 +95,7 @@ function AnnouncementsManagement() {
                 type="button"
                 onClick={() => handleSave("draft")}
                 disabled={pending}
-                className="flex items-center gap-2 rounded-md bg-gray-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 disabled:opacity-50"
               >
                 {pending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -106,16 +106,24 @@ function AnnouncementsManagement() {
               </button>
               <button
                 type="button"
+                onClick={() => handleSave("pending_review")}
+                disabled={pending}
+                className="flex items-center gap-1.5 rounded-md bg-amber-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 disabled:opacity-50"
+              >
+                Submit for Review
+              </button>
+              <button
+                type="button"
                 onClick={() => handleSave("published")}
                 disabled={pending}
-                className="flex items-center gap-2 rounded-md bg-[#186a42] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#125333] disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-md bg-[#186a42] px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#125333] disabled:opacity-50"
               >
                 {pending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                Save & Publish
+                Publish Live
               </button>
             </div>
           }
@@ -238,9 +246,11 @@ function AnnouncementsManagement() {
               onChange={(e) => setEditingItem({ ...editingItem, status: e.target.value })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#186a42] focus:ring-[#186a42] sm:text-sm p-2 border"
             >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="expired">Expired</option>
+              <option value="draft">1. Draft (Editor)</option>
+              <option value="pending_review">2. Pending Review (Editorial Queue)</option>
+              <option value="approved">3. Approved (PR Directorate)</option>
+              <option value="published">4. Published (Live)</option>
+              <option value="archived">5. Archived</option>
             </select>
           </div>
         </div>

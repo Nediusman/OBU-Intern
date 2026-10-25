@@ -30,8 +30,8 @@ const campusHero = "/campus-hero.jpg";
 const researchLab = "/research-lab.jpg";
 const ahgu = "/ahgu.jpg";
 const benef = "/benef.jpg";
-const presidentImg = "https://obu.edu.et/wp-content/uploads/2026/01/President.jpeg";
-const president1Img = "https://obu.edu.et/wp-content/uploads/2026/01/President.jpeg";
+const presidentImg = "/President.jpeg";
+const president1Img = "/President.jpeg";
 
 const heroSlides = [
   {
@@ -349,6 +349,9 @@ function PresidentMessage({
                 alt={president?.name ?? "Dr. Muktar Mohammed"}
                 className="w-full h-full object-cover object-[center_top] transition-all duration-700 group-hover:scale-105"
                 loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.src = "/President.jpeg";
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
@@ -405,7 +408,13 @@ function PresidentMessage({
             )}
           </div>
           <div className="pt-4">
-            <Link to={welcomeSection?.button_url || "/about"}>
+            <Link
+              to={
+                welcomeSection?.button_url && welcomeSection.button_url !== "/about"
+                  ? welcomeSection.button_url
+                  : "/about/president-message"
+              }
+            >
               <Button className="obu-gradient hover:brightness-110 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 px-10 py-6 text-base font-bold rounded-xl flex items-center gap-2 group">
                 {welcomeSection?.button_text || "Read Full Message"}
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />

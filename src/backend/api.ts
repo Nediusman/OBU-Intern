@@ -33,9 +33,16 @@ export const getAdministrativeOfficeBySlug = createServerFn({ method: "GET" })
       `SELECT o.id, o.slug, o.office_name, o.office_category, o.description,
               o.responsibilities, o.head_of_office, o.email, o.phone, o.location,
               o.status, o.display_order, o.main_image_id,
-              m.file_url as main_image_url, m.file_url as image
+              m.file_url as main_image_url, m.file_url as image,
+              l.slug as head_slug,
+              lm.file_url as head_image
        FROM administrative_offices o
        LEFT JOIN media m ON o.main_image_id = m.id
+       LEFT JOIN leadership l ON (o.head_of_office IS NOT NULL AND (
+          l.full_name ILIKE '%' || o.head_of_office || '%' OR
+          o.head_of_office ILIKE '%' || l.full_name || '%'
+       ))
+       LEFT JOIN media lm ON l.profile_image_id = lm.id
        WHERE o.slug = $1 AND o.status = 'active'`,
       [slug],
     );
@@ -515,9 +522,7 @@ export const getPresidentInfo = createServerFn({ method: "GET" }).handler(async 
   return {
     name: settings.president_name || "Dr. Muktar Mohammed",
     biography: settings.president_message_text || "",
-    photo:
-      settings.president_message_image ||
-      "https://obu.edu.et/wp-content/uploads/2026/01/President.jpeg",
+    photo: settings.president_message_image || "/President.jpeg",
   };
 });
 
@@ -738,6 +743,8 @@ export type AdminOfficeItem = {
   main_image_id?: string | null;
   main_image_url?: string | null;
   image?: string | null;
+  head_slug?: string | null;
+  head_image?: string | null;
 };
 
 // ─── Admin write server functions ────────────────────────────────────────────

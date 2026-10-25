@@ -82,7 +82,8 @@ function LeadershipIndex() {
       pos.includes("deputy") ||
       pos.includes("director") ||
       pos.includes("manager") ||
-      pos.includes("head")
+      pos.includes("head") ||
+      pos.includes("registrar")
     );
   });
 
