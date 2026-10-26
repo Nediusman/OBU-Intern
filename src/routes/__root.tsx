@@ -7,10 +7,11 @@ import {
   useRouterState,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { supabase } from "@/frontend/lib/supabase";
-import { getSiteSettings, type SiteSettingsRecord } from "@/backend/api";
+import { getSiteSettings, recordPageView, type SiteSettingsRecord } from "@/backend/api";
 
 import appCss from "../styles.css?url";
 
@@ -42,13 +43,14 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   const router = useRouter();
+  const errorMessage = error instanceof Error ? error.message : String(error ?? "An unexpected error occurred");
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-2xl font-bold text-foreground">Something went wrong</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{errorMessage}</p>
         <div className="mt-6 flex justify-center gap-4">
           <button
             onClick={() => {
@@ -205,6 +207,20 @@ function AppShell() {
   // Hide the public Navbar/Footer on all _admin layout routes
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+
+  // Dynamically record real visitor page views
+  useEffect(() => {
+    if (!isAdminRoute && typeof window !== "undefined") {
+      recordPageView({
+        data: {
+          path: pathname,
+          title: document.title || "Oda Bultum University",
+        },
+      }).catch((err) => {
+        console.warn("Could not record page view:", err);
+      });
+    }
+  }, [pathname, isAdminRoute]);
 
   if (isAdminRoute) {
     return <Outlet />;

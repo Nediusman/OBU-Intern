@@ -98,12 +98,12 @@ function SiteSettings() {
         phone: query.data.phone || "",
         email: query.data.email || "",
         map_url: query.data.map_url || "",
-        emergency_banner_enabled: query.data.emergency_banner_enabled || "false",
-        emergency_banner_text: query.data.emergency_banner_text || "",
-        emergency_banner_link: query.data.emergency_banner_link || "",
-        president_name: query.data.president_name || "Dr. Muktar Mohammed",
-        president_message_image: query.data.president_message_image || "/President.jpeg",
-        president_message_text: query.data.president_message_text || "",
+        emergency_banner_enabled: query.data["emergency_banner_enabled"] || "false",
+        emergency_banner_text: query.data["emergency_banner_text"] || "",
+        emergency_banner_link: query.data["emergency_banner_link"] || "",
+        president_name: query.data["president_name"] || "Dr. Muktar Mohammed",
+        president_message_image: query.data["president_message_image"] || "/President.jpeg",
+        president_message_text: query.data["president_message_text"] || "",
       });
       if (query.data["logo_url"]) setUploadedLogoUrl(query.data["logo_url"]);
       if (query.data["favicon_url"]) setUploadedFaviconUrl(query.data["favicon_url"]);
@@ -166,7 +166,7 @@ function SiteSettings() {
   const presidentImageUrl =
     uploadedPresidentUrl ||
     watch("president_message_image") ||
-    query.data?.president_message_image ||
+    query.data?.["president_message_image"] ||
     "/President.jpeg";
 
   if (query.isLoading) {

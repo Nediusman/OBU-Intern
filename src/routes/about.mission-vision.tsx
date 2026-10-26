@@ -115,7 +115,7 @@ function MissionVisionPage() {
             <Link to="/about/president-message" className="inline-flex items-center gap-2 px-6 py-3 bg-[#186a42] text-white rounded-xl font-semibold hover:bg-[#0c3822] transition-colors">
               President's Message
             </Link>
-            <Link to="/about/governance" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-[#186a42] text-[#186a42] rounded-xl font-semibold hover:bg-emerald-50 transition-colors">
+            <Link to="/governance" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-[#186a42] text-[#186a42] rounded-xl font-semibold hover:bg-emerald-50 transition-colors">
               Governance
             </Link>
           </div>

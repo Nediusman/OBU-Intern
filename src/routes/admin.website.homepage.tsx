@@ -224,6 +224,7 @@ function HomepageManagement() {
                   <input
                     type="text"
                     value={editingItem.button_url || ""}
+                    placeholder="/academics/programs"
                     onChange={(e) => setEditingItem({ ...editingItem, button_url: e.target.value })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#186a42] focus:ring-[#186a42] sm:text-sm"
                   />

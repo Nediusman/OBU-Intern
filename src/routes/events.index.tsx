@@ -33,7 +33,7 @@ export const Route = createFileRoute("/events/")({
       .from("events")
       .select("*, media:event_image_id(id, file_url)")
       .eq("status", "published")
-      .order("start_date", { ascending: true });
+      .order("start_date", { ascending: false });
 
     if (error) {
       console.error("Failed to fetch events:", error);

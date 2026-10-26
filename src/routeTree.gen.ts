@@ -15,6 +15,7 @@ import { Route as CareersRouteImport } from './routes/careers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GovernanceRouteImport } from './routes/governance'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as AboutIndexRouteImport } from './routes/about.index'
 import { Route as AboutMissionVisionRouteImport } from './routes/about.mission-vision'
 import { Route as AboutPresidentMessageRouteImport } from './routes/about.president-message'
@@ -115,6 +116,11 @@ const GovernanceRoute = GovernanceRouteImport.update({
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsRoute = ProgramsRouteImport.update({
+  id: '/programs',
+  path: '/programs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
@@ -488,6 +494,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/governance': typeof GovernanceRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/programs': typeof ProgramsRoute
   '/about/mission-vision': typeof AboutMissionVisionRoute
   '/about/president-message': typeof AboutPresidentMessageRoute
   '/academics/$slug': typeof AcademicsSlugRoute
@@ -566,6 +573,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/governance': typeof GovernanceRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/programs': typeof ProgramsRoute
   '/about/mission-vision': typeof AboutMissionVisionRoute
   '/about/president-message': typeof AboutPresidentMessageRoute
   '/academics/$slug': typeof AcademicsSlugRoute
@@ -646,6 +654,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/governance': typeof GovernanceRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/programs': typeof ProgramsRoute
   '/about/mission-vision': typeof AboutMissionVisionRoute
   '/about/president-message': typeof AboutPresidentMessageRoute
   '/academics/$slug': typeof AcademicsSlugRoute
@@ -727,6 +736,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/governance'
     | '/privacy-policy'
+    | '/programs'
     | '/about/mission-vision'
     | '/about/president-message'
     | '/academics/$slug'
@@ -805,6 +815,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/governance'
     | '/privacy-policy'
+    | '/programs'
     | '/about/mission-vision'
     | '/about/president-message'
     | '/academics/$slug'
@@ -884,6 +895,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/governance'
     | '/privacy-policy'
+    | '/programs'
     | '/about/mission-vision'
     | '/about/president-message'
     | '/academics/$slug'
@@ -964,6 +976,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GovernanceRoute: typeof GovernanceRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  ProgramsRoute: typeof ProgramsRoute
   AboutMissionVisionRoute: typeof AboutMissionVisionRoute
   AboutPresidentMessageRoute: typeof AboutPresidentMessageRoute
   AcademicsSlugRoute: typeof AcademicsSlugRoute
@@ -1043,6 +1056,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy-policy'
       fullPath: '/privacy-policy'
       preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs': {
+      id: '/programs'
+      path: '/programs'
+      fullPath: '/programs'
+      preLoaderRoute: typeof ProgramsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/': {
@@ -1642,6 +1662,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GovernanceRoute: GovernanceRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  ProgramsRoute: ProgramsRoute,
   AboutMissionVisionRoute: AboutMissionVisionRoute,
   AboutPresidentMessageRoute: AboutPresidentMessageRoute,
   AcademicsSlugRoute: AcademicsSlugRoute,

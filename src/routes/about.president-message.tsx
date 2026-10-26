@@ -11,13 +11,13 @@ export const Route = createFileRoute("/about/president-message")({
     ],
   }),
   component: PresidentMessagePage,
-  errorComponent: ({ error }) => {
+  errorComponent: ({ error }: { error?: any }) => {
     console.error("PAGE ERROR:", error);
     return <div>Error: {error?.message || "Unknown error"}</div>;
   },
 });
 
-const DEFAULT_PARAGRAPHS = [
+const DEFAULT_PARAGRAPHS: string[] = [
   "Welcome to Oda Bultum University’s official portal. I am deeply honored to invite you to explore our university’s wisdom, achievements, and vibrant academic community. The university is one of the energetic, forward-looking public higher education institutions in Ethiopia, located 326 kilometers east of the national capital Addis Ababa, in the heart of the hospitable and culturally rich community of West Hararghe, Oromia.",
   "Entrusted with academic excellence, high-impact research, and meaningful community outreach, we have cultivated an institutional environment grounded in integrity, innovation, and service. Recently differentiated as a comprehensive university, Oda Bultum University focuses on producing ethical, competent, and versatile graduates equipped to address national priorities and global challenges.",
   "Under our institutional motto, \"Productive Mind for Development\", our 10-year strategic plan positions Oda Bultum University to become an internationally recognized center of excellence in Eastern Africa by 2030, championing agro-processing, natural resource conservation, modern technology transfer, and socio-economic empowerment.",
@@ -34,10 +34,10 @@ function PresidentMessagePage() {
   const presidentPhoto = president?.photo || "/President.jpeg";
 
   // Parse paragraphs from biography if set, otherwise use default paragraphs
-  const messageParagraphs = president?.biography
+  const messageParagraphs: string[] = president?.biography
     ? president.biography
         .split(/\n\s*\n/)
-        .map((p) => p.trim())
+        .map((p: string) => p.trim())
         .filter(Boolean)
     : DEFAULT_PARAGRAPHS;
 

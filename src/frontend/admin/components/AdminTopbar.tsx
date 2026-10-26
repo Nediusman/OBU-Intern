@@ -1,4 +1,4 @@
-import { Menu, Bell, User, Search, LogOut } from "lucide-react";
+import { Menu, Bell, User, Search, LogOut, Globe, ExternalLink } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/frontend/contexts/AuthContext";
 
@@ -27,9 +27,14 @@ export function AdminTopbar({ onMenuClick }: { onMenuClick: () => void }) {
       <div className="flex items-center gap-4">
         <Link
           to="/"
-          className="text-sm font-medium text-gray-500 hover:text-gray-700 hidden sm:block"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50/80 px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-2xs hover:bg-gray-100 hover:text-[#186a42] transition-colors hidden sm:inline-flex"
+          title="Open Public Website in new tab"
         >
-          View Public Site
+          <Globe className="h-3.5 w-3.5 text-[#186a42]" />
+          <span>View Public Site</span>
+          <ExternalLink className="h-3 w-3 text-gray-400" />
         </Link>
         <button className="relative text-gray-400 hover:text-gray-500">
           <Bell className="h-5 w-5" />

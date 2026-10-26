@@ -7,7 +7,7 @@ interface ProgramCardProps {
   to?: string;
 }
 
-export function ProgramCard({ title, description, to = "/programs" }: ProgramCardProps) {
+export function ProgramCard({ title, description, to = "/academics/programs" }: ProgramCardProps) {
   return (
     <Link
       to={to}

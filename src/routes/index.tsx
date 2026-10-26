@@ -202,7 +202,13 @@ function Hero() {
                 className="mt-10 flex flex-wrap items-center justify-center gap-4 animate-fade-in-up"
                 style={{ animationDelay: "300ms" }}
               >
-                <Link to={slide.buttonUrl || "/programs"}>
+                <Link
+                  to={
+                    slide.buttonUrl && slide.buttonUrl !== "/programs"
+                      ? slide.buttonUrl
+                      : "/academics/programs"
+                  }
+                >
                   <Button
                     size="lg"
                     className="obu-gradient hover:brightness-110 text-white border-none shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 font-bold px-8 h-14 text-base rounded-lg"
